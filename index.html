@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Nombre - Blog Personal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    
+</head>
+<body>
+    
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator"></div>
+     
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Ricardo</div>
+            <ul class="nav-links">
+                <li><a href="#home">Inicio</a></li>
+                <li><a href="#about">Acerca</a></li>
+                <li><a href="#blog">Proyectos</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+            <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content fade-in-up">
+            <div class="profile-image">
+                <img src="yo.png " alt="Tu Foto de Perfil">
+            </div>
+            <h1>¡Hola! Soy Ricardo</h1>
+            <p>Desarrollador Full-Stack | Creador de Contenido</p>
+            
+            <div class="social-links">
+                <a href="https://github.com/richyb0t" class="social-link" title="GitHub" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/richyb0t" class="social-link" title="TikTok" target="_blank">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://discord.gg/W3PjpGqktQ" class="social-link" title="Discord" target="_blank">
+                    <i class="fab fa-discord"></i>
+                </a>
+                <a href="https://www.instagram.com/ricardoo.bot" class="social-link" title="Instagram" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.twitch.tv/richyb0t" class="social-link" title="Twitch" target="_blank">
+                    <i class="fab fa-twitch"></i>
+                </a>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="#about" class="btn btn-primary">Conoce más</a>
+                <a href="#" class="btn btn-secondary" onclick="downloadCV()">
+                    <i class="fas fa-download"></i> Descargar CV
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <h2 class="section-title">Acerca de Mí</h2>
+        <div class="about-grid">
+            <div class="about-text">
+                <p>¡Hola! Soy un desarrollador apasionado por crear experiencias digitales increíbles. Con experiencia en desarrollo front-end y back-end, me especializo en crear soluciones innovadoras que combinan funcionalidad con diseño excepcional.</p>
+                
+                <p>Cuando no estoy programando, puedes encontrarme compartiendo contenido en mis redes sociales, explorando las últimas tecnologías, o trabajando en proyectos personales que me inspiran.</p>
+
+                <div class="skills">
+                    <span class="skill-tag">C++</span>
+                    <span class="skill-tag">C#</span>
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">HTML</span>
+                    <span class="skill-tag">CSS</span>
+                    <span class="skill-tag">PHP</span>
+                    <span class="skill-tag">SQL</span>
+                    <span class="skill-tag">PostgreSQL</span>
+                    <span class="skill-tag">Git</span>
+                    <span class="skill-tag">Node.js</span>
+                    
+                    
+                    
+                </div>
+            </div>
+            <div class="about-image">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f8fafc;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23e2e8f0;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad2)' rx='20' /%3E%3Ctext x='200' y='160' font-family='Arial' font-size='24' fill='%23374151' text-anchor='middle'%3ETu Imagen Profesional%3C/text%3E%3C/svg%3E" alt="Imagen Profesional">
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="section">
+        <h2 class="section-title">Últimos Proyectos</h2>
+        <div class="blog-grid">
+            <article class="blog-card">
+                <div class="blog-date">12 Dic 2022</div>
+                <h3>Aplicación de escritorio - Agenda de citas</h3>
+                <p>Desarrollo de una aplicación orientada a hospitales para registrar, consultar y administrar citas, doctores, pacientes y recepcionistas. Incluye niveles de acceso, módulos de alta/consulta, gestión de expedientes clínicos y reportes en PDF.</p>
+                <a href="app.html" class="read-more">Leer más <i class="fas fa-arrow-right"></i></a>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-date">12 Dic 2023</div>
+                <h3>Sitio web - Recomendación de rutinas</h3>
+                <p>Desarrollo de un sitio web adaptable a distintos dispositivos, con recomendaciones personalizadas de rutinas según objetivos. Incluye interfaz amigable, navegación intuitiva y diseño atractivo.</p>
+                <a href="web.html" class="read-more">Leer más <i class="fas fa-arrow-right"></i></a>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-date">Ago 2025</div>
+                <h3>Bot de Discord - Manejo de servidor</h3>
+                <p>Creación de un bot avanzado para administración, moderación, utilidades e interacción con usuarios. Soporta botones, menús y audio en canales de voz con <code>@discordjs/voice</code>, incluyendo reproducción de recursos de audio y manejo de estados.</p>
+                <a href="bot.html" class="read-more">Leer más <i class="fas fa-arrow-right"></i></a>
+            </article>
+        </div>
+    </section>
+
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <h2 class="section-title">Contacto</h2>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                        <h4>Email</h4>
+                        <p>ricardohdez1207@gmail.com</p>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <h4>Ubicación</h4>
+                        <p>Guadalajara, Jalisco, MX</p>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                        <h4>Teléfono</h4>
+                        <p>+52 332 228 1296</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Librería de EmailJS -->
+            <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+            <form class="contact-form">
+                <div class="form-group">
+                    <label for="name">Nombre</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Mensaje</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Enviar Mensaje
+                </button>
+            </form>
+            
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-social">
+                <a href="https://github.com/richyb0t" class="social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/richyb0t" class="social-link">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://discord.gg/W3PjpGqktQ" class="social-link">
+                    <i class="fab fa-discord"></i>
+                </a>
+                <a href="https://www.instagram.com/ricardoo.bot" class="social-link">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.twitch.tv/richyb0t" class="social-link">
+                    <i class="fab fa-twitch"></i>
+                </a>
+                
+            </div>
+            <p>&copy; 2025 Ricardo. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

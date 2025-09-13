@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplicación de escritorio - Agenda de citas</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">Mis Proyectos</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="app.html" class="active">App</a></li>
+        <li><a href="bot.html">Bot</a></li>
+        <li><a href="web.html">Web</a></li>
+      </ul>
+      <div class="menu-toggle"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="profile-image">
+        <img src="hospital.jpg" alt="App Agenda de Citas">
+      </div>
+      <h1>Agenda de Citas</h1>
+      <p>Aplicación de escritorio desarrollada en <b>C#</b> y <b>.NET</b> para la gestión de hospitales: doctores, pacientes y citas.</p>
+      <div class="cta-buttons">
+        <a href="https://github.com/richyb0t/Agenda-de-citas.git" class="btn btn-secondary">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section fade-in-up">
+    <h2 class="section-title">Sobre el Proyecto</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>La aplicación incluye módulos de administración de pacientes, doctores y recepcionistas, con control de accesos por roles. Además, permite generar reportes en PDF y consultar expedientes clínicos.</p>
+        <div class="skills">
+          <span class="skill-tag">C#</span>
+          <span class="skill-tag">.NET</span>
+          <span class="skill-tag">Base de Datos</span>
+        </div>
+      </div>
+
+
+       <!-- Carrusel -->
+        <div class="about-image">
+        <div class="carousel">
+            <div class="carousel-track">
+            <img src="app_login.png" alt="Vista 1">
+            <img src="app_altas.png" alt="Vista 2">
+            <img src="app_index.png" alt="Vista 3">
+            <img src="app_agenda.png" alt="Vista 4">
+            </div>
+            <!-- Botones -->
+            <button class="carousel-btn prev">&#10094;</button>
+            <button class="carousel-btn next">&#10095;</button>
+        </div>
+        </div>
+    </div>
+  </section>
+
+  <!-- Avances -->
+  <section class="section fade-in-up">
+    <h2 class="section-title">Últimos avances</h2>
+    <div class="blog-grid">
+      <div class="blog-card">
+        <span class="blog-date"></span>
+        <h3>Optimización de consultas</h3>
+        <p>Se mejoró la rapidez en la búsqueda de expedientes con índices en la base de datos.</p>
+      </div>
+      <div class="blog-card">
+        <span class="blog-date"></span>
+        <h3>Reportes en PDF</h3>
+        <p>Se integró la generación automática de reportes médicos exportables.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>© 2025 Proyecto App - Agenda de Citas</p>
+    </div>
+  </footer>
+</body>
+
+    <script>
+    const track = document.querySelector(".carousel-track");
+    const images = Array.from(track.children);
+    const prevBtn = document.querySelector(".prev");
+    const nextBtn = document.querySelector(".next");
+
+    let index = 0;
+
+    function updateCarousel() {
+    const width = images[0].getBoundingClientRect().width;
+    track.style.transform = `translateX(${-index * width}px)`;
+    }
+
+    nextBtn.addEventListener("click", () => {
+    index = (index + 1) % images.length;
+    updateCarousel();
+    });
+
+    prevBtn.addEventListener("click", () => {
+    index = (index - 1 + images.length) % images.length;
+    updateCarousel();
+    });
+    </script>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bot de Discord — Ricardo Hernández</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/shared.css">
+</head>
+
+  <div class="page-transition" id="pageTransition"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">RHC</a>
+
+        <li><a href="index.html">inicio</a></li>
+        <li><a href="app.html">app</a></li>
+        <li><a href="bot.html" class="active">bot</a></li>
+        <li><a href="web.html">web</a></li>
+      </ul>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="nav-drawer" id="navDrawer" aria-label="Menú móvil">
+    <a href="index.html">inicio</a>
+    <a href="app.html">app</a>
+    <a href="bot.html" class="active">bot</a>
+    <a href="web.html">web</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="project-badge">JavaScript · Discord.js v14 · Node.js</div>
+      <div class="profile-image">
+        <img src="assets/img/botasio.png" alt="Bot de Discord">
+      </div>
+      <h1>Bot de Discord</h1>
+      <p>Bot avanzado para moderación, música e interacción en servidores. Soporta botones, menús dinámicos y audio en canales de voz.</p>
+      <div class="cta-buttons">
+        <a href="https://github.com/richyb0t/Bot-de-discord.git" class="btn btn-primary" target="_blank" rel="noopener">
+          <i class="fab fa-github"></i> ver en github
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section">
+    <h2 class="section-title reveal">sobre el proyecto</h2>
+    <div class="about-grid">
+      <div class="about-text reveal-left">
+        <p>Bot modular construido con Discord.js v14, con arquitectura de comandos slash y soporte para interacciones avanzadas — botones, menús de selección, modales. Administra roles, moderación y reproducción de audio en tiempo real.</p>
+        <p>Integra la API de OMDB para consultas de películas, comandos de moderación con baneo/muteo granular, y sistema de estados persistente en canales de voz usando <code>@discordjs/voice</code>.</p>
+        <div class="skills stagger">
+          <span class="skill-tag" style="--stagger-i:0">javascript</span>
+          <span class="skill-tag" style="--stagger-i:1">discord.js v14</span>
+          <span class="skill-tag" style="--stagger-i:2">node.js</span>
+          <span class="skill-tag" style="--stagger-i:3">rest apis</span>
+          <span class="skill-tag" style="--stagger-i:4">@discordjs/voice</span>
+        </div>
+      </div>
+      <div class="about-image reveal-right">
+        <img src="assets/img/botasio_accion.png" alt="Bot en acción">
+      </div>
+    </div>
+  </section>
+
+  <!-- Advances -->
+  <section class="section" style="padding-top: 0;">
+    <h2 class="section-title reveal">últimos avances</h2>
+    <div class="blog-grid">
+      <div class="blog-card reveal">
+        <div class="blog-date"><i class="fas fa-film"></i> api externa</div>
+        <h3>Calificaciones de Películas</h3>
+        <p>Integración con OMDB API para consultar puntuación, sinopsis y detalles de cualquier película desde Discord.</p>
+      </div>
+      <div class="blog-card reveal">
+        <div class="blog-date"><i class="fas fa-gavel"></i> moderación</div>
+        <h3>Panel de Control</h3>
+        <p>Menú interactivo con botones para baneo, muteo temporal y gestión de roles, con log de acciones en canal dedicado.</p>
+      </div>
+      <div class="blog-card reveal">
+        <div class="blog-date"><i class="fas fa-music"></i> audio</div>
+        <h3>Reproducción en Voz</h3>
+        <p>Sistema de cola de audio con controles de reproducción, pausa y skip, operando en canales de voz con baja latencia.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 Ricardo Hernández Castro — Bot de Discord</p>
+  </footer>
+
+  <script src="assets/js/shared.js"></script>
+</body>
+</html>
+

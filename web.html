@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sitio Web de Rutinas — Ricardo Hernández</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/shared.css">
+</head>
+
+  <div class="page-transition" id="pageTransition"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">RHC</a>
+
+        <li><a href="index.html">inicio</a></li>
+        <li><a href="app.html">app</a></li>
+        <li><a href="bot.html">bot</a></li>
+        <li><a href="web.html" class="active">web</a></li>
+      </ul>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="nav-drawer" id="navDrawer" aria-label="Menú móvil">
+    <a href="index.html">inicio</a>
+    <a href="app.html">app</a>
+    <a href="bot.html">bot</a>
+    <a href="web.html" class="active">web</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="project-badge">HTML · CSS · JavaScript · MySQL · PHP</div>
+      <div class="profile-image">
+        <img src="assets/img/rutinas.png" alt="Sitio Web de Rutinas">
+      </div>
+      <h1>Sitio Web de Rutinas</h1>
+      <p>Plataforma responsive que recomienda rutinas de ejercicio personalizadas según los objetivos del usuario, con backend en MySQL.</p>
+      <div class="cta-buttons">
+        <a href="https://github.com/richyb0t/Sitio-Web-de-Rutinas.git" class="btn btn-primary" target="_blank" rel="noopener">
+          <i class="fab fa-github"></i> ver en github
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section">
+    <h2 class="section-title reveal">sobre el proyecto</h2>
+    <div class="about-grid">
+      <div class="about-text reveal-left">
+        <p>Sitio web completamente responsivo desarrollado en colaboración con Alan Gabriel Haro López. Adapta su interfaz a móviles, tablets y escritorio usando CSS Grid y Flexbox modernos.</p>
+        <p>Cuenta con sistema de login, perfiles de usuario y conexión a base de datos MySQL para almacenar y recuperar rutinas personalizadas según el objetivo fitness del usuario.</p>
+        <div class="skills stagger">
+          <span class="skill-tag" style="--stagger-i:0">html5</span>
+          <span class="skill-tag" style="--stagger-i:1">css3</span>
+          <span class="skill-tag" style="--stagger-i:2">javascript</span>
+          <span class="skill-tag" style="--stagger-i:3">mysql</span>
+          <span class="skill-tag" style="--stagger-i:4">php</span>
+          <span class="skill-tag" style="--stagger-i:5">responsive</span>
+        </div>
+      </div>
+      <div class="about-image reveal-right">
+        <div class="carousel-wrap" id="carousel">
+          <div class="carousel-track" id="carouselTrack">
+            <img src="assets/img/web_index.png"   alt="Index">
+            <img src="assets/img/web_tips.png"    alt="Tips">
+            <img src="assets/img/web_login.png"   alt="Login">
+            <img src="assets/img/web_info.png"    alt="Info">
+            <img src="assets/img/web_rutinas.png" alt="Rutinas">
+          </div>
+          <button class="carousel-btn prev" id="prevBtn" aria-label="Anterior">‹</button>
+          <button class="carousel-btn next" id="nextBtn" aria-label="Siguiente">›</button>
+          <div class="carousel-dots" id="carouselDots"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Advances -->
+  <section class="section" style="padding-top: 0;">
+    <h2 class="section-title reveal">últimos avances</h2>
+    <div class="blog-grid">
+      <div class="blog-card reveal">
+        <div class="blog-date"><i class="fas fa-mobile-alt"></i> responsive</div>
+        <h3>Diseño Adaptable</h3>
+        <p>El sitio se adapta perfectamente a móviles, tablets y pantallas grandes con layouts fluidos usando Grid y Flexbox.</p>
+      </div>
+      <div class="blog-card reveal">
+        <div class="blog-date"><i class="fas fa-database"></i> base de datos</div>
+        <h3>Rutinas Dinámicas</h3>
+        <p>Integración MySQL para almacenar perfiles de usuario y generar recomendaciones personalizadas según objetivo y nivel.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 Ricardo Hernández Castro — Sitio Web de Rutinas</p>
+  </footer>
+
+  <script src="assets/js/shared.js"></script>
+</body>
+</html>
+

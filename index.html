@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ricardo Hernández Castro</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <link rel="stylesheet" href="assets/css/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+</head>
+
+<body>
+
+  <!-- Scroll progress -->
+  <div class="scroll-bar" id="scrollBar"></div>
+
+  <!-- Noise -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- Parallax cinema background -->
+  <div id="cinema-bg" aria-hidden="true"></div>
+  <div id="cinema-tint" aria-hidden="true"></div>
+
+  <!-- ─── NAVBAR ─── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo">RHC</a>
+      <ul class="nav-links">
+        <li><a href="#about">acerca</a></li>
+        <li><a href="#projects">proyectos</a></li>
+        <li><a href="#contact">contacto</a></li>
+      </ul>
+      <!-- Hamburger -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="nav-drawer" id="navDrawer" aria-label="Menú móvil">
+    <a href="#about" class="drawer-link">acerca</a>
+    <a href="#projects" class="drawer-link">proyectos</a>
+    <a href="#contact" class="drawer-link">contacto</a>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section id="home" class="hero">
+    <div class="hero-video-layer" aria-hidden="true">
+      <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+        <source src="assets/video/video1.webm" type="video/webm">
+      </video>
+    </div>
+
+    <div class="hero-left">
+      <h1 class="hero-name">Ricardo<br><em>Hernández</em></h1>
+      <p class="hero-sub">programador · creador de contenido</p>
+
+      <nav class="hero-nav" aria-label="Secciones">
+        <a href="#about"><span class="nav-marker">◆</span> Acerca de mí</a>
+        <a href="#projects"><span class="nav-marker">◆</span> Proyectos</a>
+        <a href="#contact"><span class="nav-marker">◆</span> Contacto</a>
+      </nav>
+
+      <p class="hero-scroll-hint">scroll para explorar</p>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-avatar-wrap">
+        <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="hero-avatar">
+        <div class="hero-avatar-ring" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="hero-meta" aria-label="Visitas">
+      <span id="visitorCount">cargando...</span>
+    </div>
+  </section>
+
+  <!-- ─── ABOUT ─── -->
+  <section id="about" class="section">
+    <div class="section-inner">
+      <div class="section-label">— sobre mí</div>
+      <div class="about-layout">
+        <div class="about-main">
+          <div class="about-identity reveal">
+            <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="about-photo">
+            <div>
+              <p class="about-greeting">hey, soy</p>
+              <h2 class="about-name">Ricardo.</h2>
+            </div>
+          </div>
+          <p class="about-bio reveal" data-delay="1">
+            Desarrollador de software especializado en aplicaciones web, sistemas de escritorio y bots para
+            automatización. Me enfoco en crear soluciones funcionales, intuitivas y eficientes, combinando experiencia
+            técnica con aprendizaje continuo y desarrollo autodidacta.
+          </p>
+          <div class="tech-icons reveal" data-delay="2" aria-label="Tecnologías">
+            <span class="tech-badge js" title="JavaScript"><i class="devicon-javascript-plain colored"></i></span>
+            <span class="tech-badge cs" title="C#"><i class="devicon-csharp-plain colored"></i></span>
+            <span class="tech-badge cpp" title="C++"><i class="devicon-cplusplus-plain colored"></i></span>
+            <span class="tech-badge html" title="HTML"><i class="devicon-html5-plain colored"></i></span>
+            <span class="tech-badge css3" title="CSS"><i class="devicon-css3-plain colored"></i></span>
+            <span class="tech-badge php" title="PHP"><i class="devicon-php-plain colored"></i></span>
+            <span class="tech-badge sql" title="SQL"><i class="devicon-mysql-plain colored"></i></span>
+            <span class="tech-badge node" title="Node.js"><i class="devicon-nodejs-plain colored"></i></span>
+            <span class="tech-badge git" title="Git"><i class="devicon-git-plain colored"></i></span>
+          </div>
+        </div>
+
+        <div class="about-social reveal" data-delay="1">
+          <div class="social-label">— encuéntrame en</div>
+          <div class="social-list">
+            <a href="https://github.com/richyb0t" target="_blank" rel="noopener" class="social-row">
+              <span class="social-icon"><i class="fab fa-github"></i></span>
+              <span class="social-platform">github</span>
+              <span class="social-sep">/</span>
+              <span class="social-handle">richyb0t</span>
+            </a>
+            <a href="https://www.linkedin.com/in/richyb0t" target="_blank" rel="noopener" class="social-row">
+              <span class="social-icon"><i class="fab fa-linkedin"></i></span>
+              <span class="social-platform">linkedin</span>
+              <span class="social-sep">/</span>
+              <span class="social-handle">richyb0t</span>
+            </a>
+            <a href="https://discord.gg/W3PjpGqktQ" target="_blank" rel="noopener" class="social-row">
+              <span class="social-icon"><i class="fab fa-discord"></i></span>
+              <span class="social-platform">discord</span>
+              <span class="social-sep">/</span>
+              <span class="social-handle">servidor</span>
+            </a>
+            <a href="https://www.instagram.com/ricardoo.bot" target="_blank" rel="noopener" class="social-row">
+              <span class="social-icon"><i class="fab fa-instagram"></i></span>
+              <span class="social-platform">instagram</span>
+              <span class="social-sep">/</span>
+              <span class="social-handle">ricardoo.bot</span>
+            </a>
+            <a href="https://www.twitch.tv/richyb0t" target="_blank" rel="noopener" class="social-row">
+              <span class="social-icon"><i class="fab fa-twitch"></i></span>
+              <span class="social-platform">twitch</span>
+              <span class="social-sep">/</span>
+              <span class="social-handle">richyb0t</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PROJECTS ─── -->
+  <section id="projects" class="section">
+    <div class="section-inner">
+      <div class="section-label">— mi trabajo</div>
+      <div class="projects-grid">
+
+        <a href="app.html" class="project-card reveal" data-delay="1">
+          <div class="project-card-header">
+            <span class="project-icon"><i class="fas fa-folder"></i></span>
+            <span class="project-repo">Ricardo / <strong>AgendaCitas</strong></span>
+          </div>
+          <p class="project-desc">Aplicación de escritorio para hospitales: gestión de doctores, pacientes y citas
+            clínicas con reportes PDF y control de roles.</p>
+          <div class="project-footer">
+            <span class="project-lang" data-lang="cs">
+              <span class="lang-dot"></span> C#
+            </span>
+            <span class="project-date">Dic 2022</span>
+          </div>
+        </a>
+
+        <a href="web.html" class="project-card reveal" data-delay="2">
+          <div class="project-card-header">
+            <span class="project-icon"><i class="fas fa-folder"></i></span>
+            <span class="project-repo">Ricardo / <strong>RutinasWeb</strong></span>
+          </div>
+          <p class="project-desc">Plataforma responsive que recomienda rutinas de ejercicio personalizadas según
+            objetivos del usuario, con backend MySQL.</p>
+          <div class="project-footer">
+            <span class="project-lang" data-lang="js">
+              <span class="lang-dot"></span> JavaScript
+            </span>
+            <span class="project-date">Dic 2023</span>
+          </div>
+        </a>
+
+        <a href="bot.html" class="project-card reveal" data-delay="3">
+          <div class="project-card-header">
+            <span class="project-icon"><i class="fas fa-folder"></i></span>
+            <span class="project-repo">Ricardo / <strong>DiscordBot</strong></span>
+          </div>
+          <p class="project-desc">Bot avanzado para moderación, música e interacción en servidores Discord. Soporta
+            botones, menús dinámicos y audio en voz.</p>
+          <div class="project-footer">
+            <span class="project-lang" data-lang="js">
+              <span class="lang-dot"></span> JavaScript
+            </span>
+            <span class="project-date">Ago 2025</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ─── -->
+  <section id="contact" class="section">
+    <div class="section-inner">
+      <div class="section-label">— contacto</div>
+      <div class="contact-layout">
+        <div class="contact-info-col reveal">
+          <h2 class="contact-heading">hablemos.</h2>
+          <p class="contact-sub">¿tienes un proyecto en mente? escríbeme.</p>
+          <div class="contact-items">
+            <div class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <span>ricardohdez1207@gmail.com</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Guadalajara, Jalisco, MX</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-phone"></i>
+              <span>+52 332 228 1296</span>
+            </div>
+          </div>
+          <button class="btn-cv" onclick="downloadCV()">
+            <i class="fas fa-download"></i> descargar CV
+          </button>
+        </div>
+
+        <form class="contact-form reveal" data-delay="1" id="contactForm" novalidate>
+          <div class="form-row">
+            <label for="name">nombre</label>
+            <input type="text" id="name" name="name" autocomplete="name" required>
+          </div>
+          <div class="form-row">
+            <label for="email">email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+          </div>
+          <div class="form-row">
+            <label for="message">mensaje</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn-send" id="btnSend">
+            <i class="fas fa-paper-plane"></i> enviar mensaje
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2025 Ricardo Hernández Castro</span>
+      <div class="footer-links">
+        <a href="https://github.com/richyb0t" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/richyb0t" target="_blank" rel="noopener"><i
+            class="fab fa-linkedin"></i></a>
+        <a href="https://www.twitch.tv/richyb0t" target="_blank" rel="noopener"><i class="fab fa-twitch"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <script src="assets/js/index.js"></script>
+</body>
+
+</html>

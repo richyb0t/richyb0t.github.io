@@ -8,14 +8,23 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/shared.css">
 </head>
+<body data-page="app">
 
+  <!-- Scroll progress -->
+  <div class="scroll-bar" id="scrollBar"></div>
+
+  <!-- Page transition -->
   <div class="page-transition" id="pageTransition"></div>
 
-  <!-- Navbar -->
+  <!-- Cinematic BG (populated by JS) -->
+  <div id="cinema-bg"></div>
+  <div id="cinema-tint"></div>
+
+  <!-- ─── NAVBAR ─── -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="index.html" class="logo">RHC</a>
-
+      <ul class="nav-links">
         <li><a href="index.html">inicio</a></li>
         <li><a href="app.html" class="active">app</a></li>
         <li><a href="bot.html">bot</a></li>
@@ -36,15 +45,15 @@
     <a href="web.html">web</a>
   </nav>
 
-  <!-- Hero -->
+  <!-- ─── HERO ─── -->
   <section class="hero">
+    <div class="hero-parallax-bg"></div>
+
     <div class="hero-content">
       <div class="project-badge">Aplicación de Escritorio · C# · .NET</div>
-      <div class="profile-image">
-        <img src="assets/img/hospital.jpg" alt="Agenda de Citas">
-      </div>
-      <h1>Agenda de Citas</h1>
-      <p>Sistema de gestión hospitalaria desarrollado en C# y .NET: doctores, pacientes, citas clínicas, expedientes y reportes PDF con control de roles.</p>
+      <p class="hero-eyebrow">proyecto — dic 2022</p>
+      <h1>Agenda<br><em>de Citas</em></h1>
+      <p class="hero-desc">Sistema de gestión hospitalaria desarrollado en C# y .NET: doctores, pacientes, citas clínicas, expedientes y reportes PDF con control de roles.</p>
       <div class="cta-buttons">
         <a href="https://github.com/richyb0t/Agenda-de-citas.git" class="btn btn-primary" target="_blank" rel="noopener">
           <i class="fab fa-github"></i> ver en github
@@ -53,21 +62,25 @@
     </div>
   </section>
 
-  <!-- About -->
+  <!-- ─── SOBRE EL PROYECTO ─── -->
   <section class="section">
-    <h2 class="section-title reveal">sobre el proyecto</h2>
+    <div class="section-label">— sobre el proyecto</div>
     <div class="about-grid">
-      <div class="about-text reveal-left">
-        <p>Sistema de gestión hospitalaria con módulos de administración de pacientes, doctores y recepcionistas. Incluye control de accesos por roles diferenciados, generación de reportes en PDF y consulta de expedientes clínicos.</p>
-        <p>Desarrollado con arquitectura en capas, separando la lógica de negocio, acceso a datos y presentación para facilitar el mantenimiento y la escalabilidad.</p>
-        <div class="skills stagger">
-          <span class="skill-tag" style="--stagger-i:0">c#</span>
-          <span class="skill-tag" style="--stagger-i:1">.net</span>
-          <span class="skill-tag" style="--stagger-i:2">sql server</span>
-          <span class="skill-tag" style="--stagger-i:3">winforms</span>
-          <span class="skill-tag" style="--stagger-i:4">crystal reports</span>
+
+      <div class="about-main reveal-left">
+        <div class="about-text">
+          <p>Sistema de gestión hospitalaria con módulos de administración de pacientes, doctores y recepcionistas. Incluye control de accesos por roles diferenciados, generación de reportes en PDF y consulta de expedientes clínicos.</p>
+          <p>Desarrollado con arquitectura en capas, separando la lógica de negocio, acceso a datos y presentación para facilitar el mantenimiento y la escalabilidad.</p>
+        </div>
+        <div class="skills">
+          <span class="skill-tag">c#</span>
+          <span class="skill-tag">.net</span>
+          <span class="skill-tag">sql server</span>
+          <span class="skill-tag">winforms</span>
+          <span class="skill-tag">crystal reports</span>
         </div>
       </div>
+
       <div class="about-image reveal-right">
         <div class="carousel-wrap" id="carousel">
           <div class="carousel-track" id="carouselTrack">
@@ -81,24 +94,25 @@
           <div class="carousel-dots" id="carouselDots"></div>
         </div>
       </div>
+
     </div>
   </section>
 
-  <!-- Features -->
+  <!-- ─── ÚLTIMOS AVANCES ─── -->
   <section class="section" style="padding-top: 0;">
-    <h2 class="section-title reveal">últimos avances</h2>
-    <div class="blog-grid stagger">
-      <div class="blog-card reveal">
+    <div class="section-label">— características</div>
+    <div class="blog-grid">
+      <div class="blog-card reveal" data-delay="1">
         <div class="blog-date"><i class="fas fa-database"></i> optimización BD</div>
         <h3>Consultas más rápidas</h3>
         <p>Se implementaron índices compuestos en la base de datos, reduciendo el tiempo de búsqueda de expedientes hasta un 70%.</p>
       </div>
-      <div class="blog-card reveal">
+      <div class="blog-card reveal" data-delay="2">
         <div class="blog-date"><i class="fas fa-file-pdf"></i> reportes PDF</div>
         <h3>Exportación Automática</h3>
         <p>Generación automática de reportes médicos con Crystal Reports, exportables en PDF con un solo clic.</p>
       </div>
-      <div class="blog-card reveal">
+      <div class="blog-card reveal" data-delay="3">
         <div class="blog-date"><i class="fas fa-shield-alt"></i> seguridad</div>
         <h3>Roles diferenciados</h3>
         <p>Sistema de autenticación con tres niveles de acceso: Administrador, Doctor y Recepcionista, con permisos granulares.</p>
@@ -106,11 +120,11 @@
     </div>
   </section>
 
+  <!-- ─── FOOTER ─── -->
   <footer class="footer">
-    <p>© 2025 Ricardo Hernández Castro — Agenda de Citas</p>
+    <p>© 2025 Ricardo Hernández Castro — <a href="index.html" style="color:inherit;text-decoration:none;opacity:0.6">volver al portfolio</a></p>
   </footer>
 
   <script src="assets/js/shared.js"></script>
 </body>
 </html>
-

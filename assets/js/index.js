@@ -3,7 +3,7 @@
   if (typeof emailjs !== 'undefined') emailjs.init('P8_29jAf2zFc0kVSV');
 })();
 
-/* ── Shared scroll state (one source of truth) ────── */
+/* ── Shared scroll state ──────────────────────────── */
 let _scrollY = window.scrollY;
 window.addEventListener('scroll', () => { _scrollY = window.scrollY; }, { passive: true });
 
@@ -11,18 +11,14 @@ window.addEventListener('scroll', () => { _scrollY = window.scrollY; }, { passiv
 (function () {
   const bar = document.getElementById('scrollBar');
   if (!bar) return;
-
-  // [OPT-1] Cache scrollHeight - document calculation once, update on resize
   let scrollMax = document.documentElement.scrollHeight - window.innerHeight;
   window.addEventListener('resize', () => {
     scrollMax = document.documentElement.scrollHeight - window.innerHeight;
   }, { passive: true });
-
   let ticking = false;
   window.addEventListener('scroll', () => {
     if (!ticking) {
       requestAnimationFrame(() => {
-        // [OPT-2] Use transform instead of width to avoid layout recalculation (reflow)
         bar.style.transform = `scaleX(${_scrollY / (scrollMax || 1)})`;
         ticking = false;
       });
@@ -35,8 +31,6 @@ window.addEventListener('scroll', () => { _scrollY = window.scrollY; }, { passiv
 (function () {
   const nav = document.getElementById('navbar');
   if (!nav) return;
-
-  // [OPT-3] Track previous state to avoid redundant classList operations
   let wasScrolled = false;
   window.addEventListener('scroll', () => {
     const isScrolled = _scrollY > 40;
@@ -61,7 +55,6 @@ window.addEventListener('scroll', () => { _scrollY = window.scrollY; }, { passiv
     toggle.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
   }
-
   function closeMenu() {
     toggle.classList.remove('active');
     drawer.classList.remove('open');
@@ -70,11 +63,8 @@ window.addEventListener('scroll', () => { _scrollY = window.scrollY; }, { passiv
     document.body.style.overflow = '';
   }
 
-  toggle.addEventListener('click', () => {
-    drawer.classList.contains('open') ? closeMenu() : openMenu();
-  });
+  toggle.addEventListener('click', () => drawer.classList.contains('open') ? closeMenu() : openMenu());
   overlay?.addEventListener('click', closeMenu);
-
   drawer.addEventListener('click', e => {
     const link = e.target.closest('a');
     if (!link) return;
@@ -84,11 +74,8 @@ window.addEventListener('scroll', () => { _scrollY = window.scrollY; }, { passiv
       closeMenu();
       const target = document.querySelector(href);
       if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 320);
-    } else {
-      closeMenu();
-    }
+    } else { closeMenu(); }
   });
-
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && drawer.classList.contains('open')) closeMenu();
   });
@@ -104,6 +91,15 @@ document.addEventListener('click', e => {
 
 /* ─────────────────────────────────────────────────────
    CINEMATIC PARALLAX — GPU-only, single RAF loop
+
+   KEY FIXES vs previous version:
+   1. filter REMOVED from the RAF loop → stays as static CSS value on each layer.
+      filter forces a composited paint on the oversized (-15% inset) layer every frame;
+      moving it to CSS lets the browser cache the painted surface and only composite.
+   2. Lerp converge guard raised 0.12 → 1.0 to stop needless extra frames.
+   3. heroLeft scroll-transform and mouse-transform unified into one write per frame
+      using separate offset variables; no more fighting between two RAF loops.
+   4. Canvas particles paused via IntersectionObserver when hero exits viewport.
    ───────────────────────────────────────────────────── */
 (function initParallax() {
   const images = [
@@ -111,7 +107,6 @@ document.addEventListener('click', e => {
     'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1800&auto=format&fit=crop&q=75',
     'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1800&auto=format&fit=crop&q=75',
   ];
-
   const tints = [
     'rgba(5,10,30,0.08)',
     'rgba(10,20,10,0.06)',
@@ -120,33 +115,22 @@ document.addEventListener('click', e => {
 
   let cBg    = document.getElementById('cinema-bg');
   let tintEl = document.getElementById('cinema-tint');
-
-  // Create elements if missing (defensive — HTML declares them statically, but just in case)
-  if (!cBg) {
-    cBg = document.createElement('div');
-    cBg.id = 'cinema-bg';
-    document.body.insertBefore(cBg, document.body.firstChild);
-  }
-  if (!tintEl) {
-    tintEl = document.createElement('div');
-    tintEl.id = 'cinema-tint';
-    document.body.insertBefore(tintEl, document.body.firstChild);
-  }
+  if (!cBg)    { cBg    = document.createElement('div'); cBg.id    = 'cinema-bg';   document.body.insertBefore(cBg,    document.body.firstChild); }
+  if (!tintEl) { tintEl = document.createElement('div'); tintEl.id = 'cinema-tint'; document.body.insertBefore(tintEl, document.body.firstChild); }
 
   const hero   = document.querySelector('.hero');
   const heroBg = hero && hero.querySelector('.hero-parallax-bg');
 
-  const mqMobile  = window.matchMedia('(max-width: 900px)');
-  let isMobile    = mqMobile.matches;
+  const mqMobile = window.matchMedia('(max-width: 900px)');
+  let isMobile = mqMobile.matches;
   let depthBase, depthStep, heroDepth, lerpFactor;
 
-  // [OPT-4] Reactive media query listener instead of one-time check
   function applyMotionConfig() {
     isMobile   = mqMobile.matches;
     depthBase  = isMobile ? 0.11 : 0.17;
     depthStep  = isMobile ? 0.022 : 0.032;
     heroDepth  = isMobile ? 0.22 : 0.34;
-    lerpFactor = isMobile ? 0.11 : 0.08;
+    lerpFactor = isMobile ? 0.13 : 0.10;   // slightly faster → converges in fewer frames
   }
   applyMotionConfig();
   mqMobile.addEventListener('change', applyMotionConfig);
@@ -164,108 +148,106 @@ document.addEventListener('click', e => {
   let heroH = hero ? hero.offsetHeight : 0;
   window.addEventListener('resize', () => { heroH = hero ? hero.offsetHeight : 0; }, { passive: true });
 
-  let current = 0;
-  let rafId   = 0;
-  let targetY = window.scrollY;
-  let smoothY = targetY;
+  let current = 0, rafId = 0;
+  let targetY = window.scrollY, smoothY = targetY;
 
-  // [OPT-5] Cache heroLeft reference outside the RAF loop (avoids querySelector every frame)
   const heroLeft = hero && hero.querySelector('.hero-left');
-
-  // Fix: heroLeftIn CSS animation (0.6s + 0.05s delay) owns opacity during entry.
-  // RAF must not write opacity until the animation finishes — otherwise the two fight
-  // and heroLeft flickers on first scroll. Flag flips on animationend.
   let heroLeftReady = false;
   if (heroLeft) {
-    heroLeft.addEventListener('animationend', () => {
-      heroLeftReady = true;
-    }, { once: true });
-    // Safety fallback in case animationend doesn't fire (reduced-motion, hidden tab at load)
+    heroLeft.addEventListener('animationend', () => { heroLeftReady = true; }, { once: true });
     setTimeout(() => { heroLeftReady = true; }, 800);
   }
+
+  // Separate scroll-offset and mouse-offset for heroLeft; combined in one write per frame
+  let hlScrollTy = 0, hlScrollOp = 1;
+  let hlMouseX = 0, hlMouseY = 0;
 
   function setLayer(idx) {
     if (idx === current) return;
     const prev = layers[current];
-    prev.classList.remove('active');
-    prev.classList.add('previous');
-    current = idx;
-    layers[current].classList.add('active');
+    prev.classList.remove('active'); prev.classList.add('previous');
+    current = idx; layers[current].classList.add('active');
     if (tintEl) tintEl.style.background = tints[idx] || 'transparent';
-    function cleanup() { prev.classList.remove('previous'); }
+    const cleanup = () => prev.classList.remove('previous');
     prev.addEventListener('transitionend', cleanup, { once: true });
     setTimeout(cleanup, 1700);
   }
 
-  // [OPT-6] Pre-build the transform string parts outside the loop to reduce GC pressure
   function update() {
     rafId = 0;
 
     smoothY += (targetY - smoothY) * lerpFactor;
-    if (Math.abs(targetY - smoothY) < 0.12) smoothY = targetY;
+    if (Math.abs(targetY - smoothY) < 1.0) smoothY = targetY;
 
-    const scrollY  = smoothY;
+    const sy       = smoothY;
     const maxH     = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = scrollY / (maxH || 1);
+    const progress = sy / (maxH || 1);
+    const vh       = window.innerHeight;
 
-    // [OPT-7] Compute filter string once (already done) and build layer transforms in same pass
-    const bri       = (0.22 + progress * 0.08).toFixed(3);
-    const sat       = (0.42 + progress * 0.12).toFixed(3);
-    const gray      = (0.34 - progress * 0.12).toFixed(3);
-    const filterStr = `brightness(${bri}) saturate(${sat}) grayscale(${gray})`;
-
+    // Cinema layers: use a viewport-normalized offset so the background keeps moving
+    // through all sections without ever drifting out of the -15% inset margin.
+    // Formula: map scroll progress [0..1] → translateY range [-8vh .. +8vh].
+    // Each layer gets a slightly different range (depthStep) for depth separation.
     for (let i = 0; i < layers.length; i++) {
-      const ty = scrollY * (depthBase + i * depthStep);
-      layers[i].style.transform = `translateY(${ty}px) scale(1.26)`;
-      layers[i].style.filter    = filterStr;
+      const range = vh * (0.08 + i * 0.03);           // e.g. 8vh, 11vh, 14vh
+      const ty    = (progress - 0.5) * range * 2;     // centered: -range at top, +range at bottom
+      layers[i].style.transform = `translateY(${ty.toFixed(1)}px) scale(1.26)`;
     }
 
+    // heroBg inside the hero section still uses raw scroll (only visible in hero viewport)
     if (heroBg) {
-      heroBg.style.transform = `translateY(${scrollY * heroDepth}px) scale(1.32)`;
+      heroBg.style.transform = `translateY(${sy * heroDepth}px) scale(1.32)`;
     }
 
     if (heroLeft) {
-      const hp = Math.min(scrollY / (heroH * 0.6 || 1), 1);
-      // Only write opacity after CSS entry animation has finished (heroLeftReady flag)
-      if (heroLeftReady) {
-        heroLeft.style.opacity = Math.max(0, 1 - hp * 1.6).toString();
-      }
-      heroLeft.style.transform = `translateY(${scrollY * 0.08}px)`;
+      const hp = Math.min(sy / (heroH * 0.6 || 1), 1);
+      hlScrollTy = sy * 0.08;
+      hlScrollOp = Math.max(0, 1 - hp * 1.6);
+
+      heroLeft.style.transform = `translate(${hlMouseX}px, ${hlScrollTy + hlMouseY}px)`;
+      if (heroLeftReady) heroLeft.style.opacity = hlScrollOp.toString();
     }
 
-    const zone = Math.min(Math.floor(progress * images.length), images.length - 1);
-    setLayer(zone);
+    setLayer(Math.min(Math.floor(progress * images.length), images.length - 1));
 
-    if (targetY !== smoothY) {
-      rafId = requestAnimationFrame(update);
-    }
-  }
-
-  function requestTick() {
-    if (!rafId) rafId = requestAnimationFrame(update);
+    if (Math.abs(targetY - smoothY) > 1.0) rafId = requestAnimationFrame(update);
   }
 
   window.addEventListener('scroll', () => {
     targetY = _scrollY;
-    requestTick();
+    if (!rafId) rafId = requestAnimationFrame(update);
   }, { passive: true });
 
+  // Mouse parallax on heroBg background-position (cheap — no layout)
   if (hero && heroBg && !isMobile) {
     let rafMouse = 0;
-    let mx = 0, my = 0;
     hero.addEventListener('mousemove', e => {
-      const rect = hero.getBoundingClientRect();
-      mx = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
-      my = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
-      if (!rafMouse) {
-        rafMouse = requestAnimationFrame(() => {
-          rafMouse = 0;
-          heroBg.style.backgroundPosition = `${50 + mx * 2.6}% ${50 + my * 2}%`;
-        });
-      }
+      if (rafMouse) return;
+      rafMouse = requestAnimationFrame(() => {
+        rafMouse = 0;
+        const rect = hero.getBoundingClientRect();
+        const mx   = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
+        const my   = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+        heroBg.style.backgroundPosition = `${50 + mx * 2.6}% ${50 + my * 2}%`;
+
+        // FIX: update mouse offset vars, trigger unified write via main RAF
+        if (heroLeft) {
+          const strength = (e.clientX - rect.left) < rect.width * 0.6 ? 1 : 0.4;
+          hlMouseX = (mx / 2) * 10 * strength;
+          hlMouseY = (my / 2) *  6 * strength;
+          if (!rafId) rafId = requestAnimationFrame(update);
+        }
+      });
     }, { passive: true });
+
     hero.addEventListener('mouseleave', () => {
       heroBg.style.backgroundPosition = '50% 50%';
+      if (heroLeft) {
+        hlMouseX = 0; hlMouseY = 0;
+        heroLeft.style.transition = 'transform 0.7s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s';
+        heroLeft.style.transform  = `translate(0px, ${hlScrollTy}px)`;
+        heroLeft.addEventListener('transitionend', () => { heroLeft.style.transition = ''; }, { once: true });
+      }
     });
   }
 
@@ -294,12 +276,11 @@ document.addEventListener('click', e => {
   if (!aboutCard) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  let rafA = 0, dx = 0, dy = 0;
-
+  let rafA = 0;
   aboutCard.addEventListener('mousemove', e => {
-    const r = aboutCard.getBoundingClientRect();
-    dx = (e.clientX - r.left) / r.width  - 0.5;
-    dy = (e.clientY - r.top)  / r.height - 0.5;
+    const r  = aboutCard.getBoundingClientRect();
+    const dx = (e.clientX - r.left) / r.width  - 0.5;
+    const dy = (e.clientY - r.top)  / r.height - 0.5;
     if (!rafA) {
       rafA = requestAnimationFrame(() => {
         rafA = 0;
@@ -309,7 +290,6 @@ document.addEventListener('click', e => {
       });
     }
   });
-
   aboutCard.addEventListener('mouseleave', () => {
     if (rafA) { cancelAnimationFrame(rafA); rafA = 0; }
     aboutCard.style.transform = '';
@@ -372,16 +352,13 @@ function downloadCV() {
   showToast('descargando CV...', 'success');
 }
 
-/* ── Scroll reveal (IntersectionObserver) ────────── */
+/* ── Scroll reveal ────────────────────────────────── */
 (function () {
   const els = document.querySelectorAll('.reveal');
   if (!els.length) return;
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   els.forEach(el => observer.observe(el));
@@ -398,8 +375,7 @@ function downloadCV() {
         for (const ch of node.textContent) {
           if (ch === ' ') { frag.appendChild(document.createTextNode(' ')); continue; }
           const s = document.createElement('span');
-          s.className = 'hero-char';
-          s.textContent = ch;
+          s.className = 'hero-char'; s.textContent = ch;
           frag.appendChild(s);
         }
         node.parentNode.replaceChild(frag, node);
@@ -440,7 +416,9 @@ function downloadCV() {
     });
   });
 
-  /* 4. Floating particles (canvas) */
+  /* 4. Floating particles (canvas)
+     FIX: IntersectionObserver pauses the RAF loop when hero is off-screen,
+     so we're not burning GPU time drawing into an invisible canvas. */
   const heroLeft = document.querySelector('.hero-left');
   const hero     = document.querySelector('.hero');
   if (!hero || !heroLeft) return;
@@ -450,6 +428,7 @@ function downloadCV() {
   hero.appendChild(canvas);
   const ctx = canvas.getContext('2d');
   let W, H, pts, rafP = 0, resizeTimer;
+  let heroVisible = true; // assume visible at start
 
   function resize() {
     W = canvas.width  = hero.offsetWidth;
@@ -469,9 +448,9 @@ function downloadCV() {
     }));
   }
 
-  // [OPT-8] Stop RAF when tab is hidden, resume on visibility change
   function draw() {
-    if (document.hidden) return; // pause — visibilitychange will restart
+    // FIX: stop loop if tab hidden OR hero scrolled out of view
+    if (document.hidden || !heroVisible) { rafP = 0; return; }
     ctx.clearRect(0, 0, W, H);
     for (const p of pts) {
       p.ph += 0.009;
@@ -486,42 +465,28 @@ function downloadCV() {
     rafP = requestAnimationFrame(draw);
   }
 
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && !rafP) rafP = requestAnimationFrame(draw);
-  });
+  function startDraw() { if (!rafP) rafP = requestAnimationFrame(draw); }
 
-  resize(); draw();
+  // Pause when hero leaves viewport, resume when it returns
+  const heroObs = new IntersectionObserver(entries => {
+    heroVisible = entries[0].isIntersecting;
+    if (heroVisible) startDraw();
+    // if not visible, draw() self-cancels on its next frame
+  }, { threshold: 0 });
+  heroObs.observe(hero);
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) startDraw(); });
+
+  resize();
+  startDraw();
 
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(resize, 100);
   }, { passive: true });
-
-  /* 5. Mouse parallax on heroLeft */
-  let rafHL = 0, hlMx = 0, hlMy = 0;
-  hero.addEventListener('mousemove', e => {
-    hlMx = e.clientX; hlMy = e.clientY;
-    if (!rafHL) {
-      rafHL = requestAnimationFrame(() => {
-        rafHL = 0;
-        const r       = hero.getBoundingClientRect();
-        const relX    = (hlMx - r.left) / r.width  - 0.5;
-        const relY    = (hlMy - r.top)  / r.height - 0.5;
-        const strength = (hlMx - r.left) < r.width * 0.6 ? 1 : 0.4;
-        heroLeft.style.transform = `translate(${relX * 10 * strength}px, ${relY * 6 * strength}px)`;
-      });
-    }
-  }, { passive: true });
-
-  hero.addEventListener('mouseleave', () => {
-    heroLeft.style.transition = 'transform 0.7s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s';
-    heroLeft.style.transform  = '';
-    heroLeft.addEventListener('transitionend', () => { heroLeft.style.transition = ''; }, { once: true });
-  });
 })();
 
 /* ── Page fade-in ─────────────────────────────────── */
-// body starts at opacity:0 (index.css), .loaded reveals it
 window.addEventListener('load', () => {
   requestAnimationFrame(() => document.body.classList.add('loaded'));
 });
@@ -534,7 +499,6 @@ window.addEventListener('load', () => {
   btn.className = 'scroll-top-btn';
   document.body.appendChild(btn);
 
-  // [OPT-10] Track previous visibility state to avoid redundant classList calls
   let btnVisible = false;
   window.addEventListener('scroll', () => {
     const shouldShow = _scrollY > 400;
@@ -547,55 +511,34 @@ window.addEventListener('load', () => {
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 })();
 
-/* ═══════════════════════════════════════════════════
-   21ST.DEV ANIMATIONS — vanilla JS ports
-   ═══════════════════════════════════════════════════ */
-
-/* ── 1. Text Shimmer ─────────────────────────────── */
-/* Targets: .hero-sub, .nav-logo, elements con data-shimmer */
+/* ── Text Shimmer ─────────────────────────────────── */
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  /* hero-sub: shimmer en loop sutil */
-  document.querySelectorAll('.hero-sub').forEach(el => {
-    el.classList.add('shimmer-text');
-  });
-
-  /* nav-logo: shimmer más lento y elegante */
+  document.querySelectorAll('.hero-sub').forEach(el => el.classList.add('shimmer-text'));
   const logo = document.querySelector('.nav-logo');
   if (logo) logo.classList.add('shimmer-text-strong');
-
-  /* cualquier elemento marcado explícitamente */
   document.querySelectorAll('[data-shimmer]').forEach(el => {
     el.classList.add(el.dataset.shimmer === 'strong' ? 'shimmer-text-strong' : 'shimmer-text');
   });
 })();
 
-/* ── 2. Blur-In word by word ─────────────────────── */
-/* Targets: .about-bio, .contact-sub, [data-blur-in] */
+/* ── Blur-In word by word ─────────────────────────── */
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
   const SELECTORS = ['.about-bio', '.contact-sub', '[data-blur-in]'];
 
   function wrapWords(el) {
-    /* Evitar doble proceso */
     if (el.dataset.blurReady) return;
     el.dataset.blurReady = '1';
-
-    const raw = el.textContent.trim();
-    const words = raw.split(/\s+/);
+    const words = el.textContent.trim().split(/\s+/);
     el.innerHTML = '';
     el.classList.add('blur-in-text');
     if (el.dataset.blurIn === 'fast') el.classList.add('blur-in-fast');
-
     words.forEach((word, i) => {
       const span = document.createElement('span');
-      span.className = 'blur-word';
-      span.textContent = word;
+      span.className = 'blur-word'; span.textContent = word;
       span.style.setProperty('--wi', i);
       el.appendChild(span);
-      /* espacio entre palabras */
       if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
     });
   }
@@ -603,59 +546,43 @@ window.addEventListener('load', () => {
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
+      entry.target.classList.add('visible'); observer.unobserve(entry.target);
     });
   }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
 
-  document.querySelectorAll(SELECTORS.join(', ')).forEach(el => {
-    wrapWords(el);
-    observer.observe(el);
-  });
+  document.querySelectorAll(SELECTORS.join(', ')).forEach(el => { wrapWords(el); observer.observe(el); });
 })();
 
-/* ── 3. Number Ticker ────────────────────────────── */
-/* Targets: #visitorCount, [data-ticker="N"]         */
+/* ── Number Ticker ────────────────────────────────── */
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  /* Animar un número del origen al destino */
   function animateTicker(el, from, to, duration) {
     const start = performance.now();
-    /* easeOutExpo para velocidad realista */
-    function easeOutExpo(t) {
-      return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-    }
+    function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
     function step(now) {
       const elapsed = Math.min((now - start) / duration, 1);
-      const value   = Math.round(from + (to - from) * easeOutExpo(elapsed));
-      el.textContent = value.toLocaleString('es-MX');
+      el.textContent = Math.round(from + (to - from) * easeOutExpo(elapsed)).toLocaleString('es-MX');
       if (elapsed < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
   }
 
-  /* Observar y disparar al entrar al viewport */
   const ticker_observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      const el  = entry.target;
-      const to  = parseInt(el.dataset.tickerTarget || el.textContent, 10);
+      const el = entry.target;
+      const to = parseInt(el.dataset.tickerTarget || el.textContent, 10);
       if (isNaN(to)) return;
-      const from = parseInt(el.dataset.tickerFrom || '0', 10);
-      animateTicker(el, from, to, 1400);
+      animateTicker(el, parseInt(el.dataset.tickerFrom || '0', 10), to, 1400);
       ticker_observer.unobserve(el);
     });
   }, { threshold: 0.5 });
 
-  /* visitorCount: el JS de visitor counter ya escribe el número;
-     lo interceptamos para animarlo al aparecer */
   const vcEl = document.getElementById('visitorCount');
   if (vcEl) {
-    /* Esperar a que el contador escriba el valor real */
     const mu = new MutationObserver(() => {
-      const raw = vcEl.textContent;
-      const num = parseInt(raw, 10);
+      const num = parseInt(vcEl.textContent, 10);
       if (!isNaN(num) && num > 0) {
         mu.disconnect();
         vcEl.dataset.tickerTarget = num;
@@ -666,82 +593,51 @@ window.addEventListener('load', () => {
     mu.observe(vcEl, { childList: true, subtree: true, characterData: true });
   }
 
-  /* Elementos marcados explícitamente: data-ticker="250" */
   document.querySelectorAll('[data-ticker]').forEach(el => {
     const to = parseInt(el.dataset.ticker, 10);
     if (isNaN(to)) return;
-    el.dataset.tickerTarget = to;
-    el.dataset.tickerFrom   = '0';
+    el.dataset.tickerTarget = to; el.dataset.tickerFrom = '0';
     ticker_observer.observe(el);
   });
 })();
 
-/* ── 4. Magnetic Button ──────────────────────────── */
-/* Targets: .btn-cv, .btn-send, [data-magnetic]      */
+/* ── Magnetic Button ──────────────────────────────── */
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  /* Skip en móvil — no hay cursor */
   if (window.matchMedia('(hover: none)').matches) return;
 
-  const STRENGTH_OUTER = 0.38;  /* qué tanto se mueve el botón */
-  const STRENGTH_INNER = 0.62;  /* qué tanto se mueve el contenido interno */
-  const RADIUS_FACTOR  = 0.6;   /* zona de atracción = N × max(w,h) */
+  const STRENGTH_OUTER = 0.38, STRENGTH_INNER = 0.62, RADIUS_FACTOR = 0.6;
 
   function makeMagnetic(btn) {
     if (btn.dataset.magneticReady) return;
     btn.dataset.magneticReady = '1';
     btn.classList.add('magnetic-btn');
 
-    /* Envolver contenido en .magnetic-inner */
     const inner = document.createElement('span');
     inner.className = 'magnetic-inner';
     while (btn.firstChild) inner.appendChild(btn.firstChild);
     btn.appendChild(inner);
 
     let raf = 0;
-    let bx = 0, by = 0; /* posición actual del cursor relativa al centro */
-
     function applyForce(cx, cy) {
-      const r   = btn.getBoundingClientRect();
-      const mx  = r.left + r.width  / 2;
-      const my  = r.top  + r.height / 2;
-      const dx  = cx - mx;
-      const dy  = cy - my;
+      const r    = btn.getBoundingClientRect();
+      const dx   = cx - (r.left + r.width  / 2);
+      const dy   = cy - (r.top  + r.height / 2);
       const radius = Math.max(r.width, r.height) * RADIUS_FACTOR;
-      const dist   = Math.hypot(dx, dy);
-
-      if (dist < radius) {
-        bx = dx; by = dy;
-        const ox = dx * STRENGTH_OUTER;
-        const oy = dy * STRENGTH_OUTER;
-        const ix = dx * STRENGTH_INNER;
-        const iy = dy * STRENGTH_INNER;
-        btn.style.transform   = `translate(${ox.toFixed(2)}px, ${oy.toFixed(2)}px)`;
-        inner.style.transform = `translate(${(ix - ox).toFixed(2)}px, ${(iy - oy).toFixed(2)}px)`;
+      if (Math.hypot(dx, dy) < radius) {
+        btn.style.transform   = `translate(${(dx * STRENGTH_OUTER).toFixed(2)}px, ${(dy * STRENGTH_OUTER).toFixed(2)}px)`;
+        inner.style.transform = `translate(${(dx * (STRENGTH_INNER - STRENGTH_OUTER)).toFixed(2)}px, ${(dy * (STRENGTH_INNER - STRENGTH_OUTER)).toFixed(2)}px)`;
       } else {
-        release();
+        btn.style.transform = inner.style.transform = '';
       }
     }
-
-    function release() {
-      btn.style.transform   = '';
-      inner.style.transform = '';
-      bx = 0; by = 0;
-    }
-
-    /* Escucha global: el cursor atrae incluso fuera del botón */
     function onMove(e) {
       if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        applyForce(e.clientX, e.clientY);
-      });
+      raf = requestAnimationFrame(() => { raf = 0; applyForce(e.clientX, e.clientY); });
     }
-
     window.addEventListener('mousemove', onMove, { passive: true });
-    btn.addEventListener('mouseleave', release);
+    btn.addEventListener('mouseleave', () => { btn.style.transform = inner.style.transform = ''; });
   }
 
-  /* Aplicar a los botones CTA del portafolio */
   document.querySelectorAll('.btn-cv, .btn-send, [data-magnetic]').forEach(makeMagnetic);
 })();

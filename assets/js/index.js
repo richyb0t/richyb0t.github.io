@@ -385,6 +385,42 @@ function downloadCV() {
     }
     Array.from(heroName.childNodes).forEach(wrapChars);
     heroName.querySelectorAll('.hero-char').forEach((el, i) => el.style.setProperty('--ci', i));
+
+    /* Spring hover — letra por letra (Text_03 style) */
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      function springTo(span, ty, ts_, delay) {
+        const K = 300, D = 15;
+        if (span._raf) cancelAnimationFrame(span._raf);
+        let start = null;
+        function step(now) {
+          if (!start) start = now;
+          if (now - start < delay) { span._raf = requestAnimationFrame(step); return; }
+          const dt = 1 / 60;
+          span._vy = (span._vy || 0) + (-K * ((span._y || 0) - ty) - D * (span._vy || 0)) * dt;
+          span._y  = (span._y  || 0) + span._vy * dt;
+          span._vs = (span._vs || 0) + (-K * ((span._scale || 1) - ts_) - D * (span._vs || 0)) * dt;
+          span._scale = (span._scale || 1) + span._vs * dt;
+          span.style.transform = `translateY(${span._y.toFixed(2)}px) scale(${span._scale.toFixed(4)})`;
+          const done = Math.abs(span._y - ty) < .08 && Math.abs(span._vy) < .08
+                    && Math.abs(span._scale - ts_) < .001 && Math.abs(span._vs) < .001;
+          if (!done) span._raf = requestAnimationFrame(step);
+          else {
+            span._y = ty; span._vy = 0; span._scale = ts_; span._vs = 0;
+            span.style.transform = `translateY(${ty}px) scale(${ts_})`;
+          }
+        }
+        span._raf = requestAnimationFrame(step);
+      }
+
+      heroName.addEventListener('mouseenter', () => {
+        heroName.querySelectorAll('.hero-char').forEach((s, i) =>
+          springTo(s, -6, 1.2, i * 30));
+      });
+      heroName.addEventListener('mouseleave', () => {
+        heroName.querySelectorAll('.hero-char').forEach((s, i) =>
+          springTo(s, 0, 1, i * 18));
+      });
+    }
   }
 
   /* 2. Decorative line */

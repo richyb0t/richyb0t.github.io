@@ -1,32 +1,43 @@
 /* ═══════════════════════════════════════════════════
-   SHARED.CSS — Sub-pages (app, bot, web)
-   Aesthetic: Cinematic dark · Glass · DM Mono + Syne
-   Aligned with index.css
+   SHARED.CSS — Sub-páginas (app, bot, web)
+   Estética: Cinematográfica oscura · Glass · DM Mono + Syne
+   Alineado con index.css (mismos tokens CSS).
+
+   Se carga con <link rel="stylesheet" href="assets/css/shared.css">
+   en app.html, bot.html y web.html.
+
+   TABLA DE CONTENIDOS
+   ────────────────────────────────────────────────────
+   1.  RESET & BASE          — normalización + body
+   2.  TOKENS                — variables CSS globales
+   3.  SCROLLBAR & SELECCIÓN — estilos de utilidad global
+   4.  SCROLL PROGRESS BAR  — línea 1 px en la cima
+   5.  NOISE OVERLAY        — textura de grano sobre el sitio
+   6.  CINEMATIC BG         — capas de imagen con parallax
+   7.  PAGE TRANSITION      — overlay de salida entre páginas
+   8.  NAVBAR               — barra fija, logo, links, hamburger, drawer
+   9.  HERO                 — contenedor, fondo, video, scan-lines, content
+   10. SECTIONS             — contenedor genérico, etiqueta
+   11. ABOUT CARD           — tarjeta glass con glow y tilt
+   12. ABOUT GRID           — texto, skill tags, imagen
+   13. CAROUSEL             — galería de imágenes con dots
+   14. BLOG / FEATURE CARDS — tarjetas de características
+   15. SCROLL REVEAL        — animaciones de entrada
+   16. BLUR-IN              — reveal palabra por palabra
+   17. TEXT SHIMMER         — gradiente animado en logo y badges
+   18. FOOTER               — pie de página
+   19. SCROLL-TO-TOP        — botón flotante
+   20. RESPONSIVE           — breakpoints móvil
+   21. REDUCED MOTION       — accesibilidad de movimiento
    ═══════════════════════════════════════════════════ */
+
+
+/* ───────────────────────────────────────────────────
+   1. RESET & BASE
+   ─────────────────────────────────────────────────── */
 
 *, *::before, *::after {
   margin: 0; padding: 0; box-sizing: border-box;
-}
-
-:root {
-  --bg:         #080808;
-  --surface:    rgba(255,255,255,0.04);
-  --glass:      rgba(255,255,255,0.055);
-  --glass-hi:   rgba(255,255,255,0.10);
-  --border:     rgba(255,255,255,0.08);
-  --border-hi:  rgba(255,255,255,0.18);
-  --text:       #e8e8e4;
-  --text-dim:   rgba(220,220,210,0.58);
-  --text-mute:  rgba(220,220,210,0.30);
-  --accent:     #d4d4c8;
-  --mono:    'DM Mono', 'Courier New', monospace;
-  --display: 'Syne', sans-serif;
-  --serif:   'Instrument Serif', Georgia, serif;
-  --ease:    cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --motion-fast: 180ms;
-  --motion-base: 320ms;
-  --motion-slow: 650ms;
 }
 
 html { scroll-behavior: smooth; }
@@ -36,30 +47,94 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.7;
-  overflow-x: hidden;
+  overflow-x: hidden;   /* evita scroll horizontal por elementos que se salen */
   font-size: 14px;
-  padding-top: 64px;
+  padding-top: 64px;    /* espacio para que el contenido no quede bajo la navbar fija */
+
+  /* Empieza invisible; JS agrega .loaded en window load → fade-in */
   opacity: 0;
   transition: opacity 0.45s ease;
 }
 body.loaded { opacity: 1; }
 
-/* ── Scrollbar ───────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   2. TOKENS — Variables CSS globales
+   Cambia aquí para afectar todo el sitio de una sola vez.
+   Mismos valores que index.css para coherencia visual.
+   ─────────────────────────────────────────────────── */
+
+:root {
+  /* ── Fondos ── */
+  --bg:         #080808;                  /* negro casi puro                  */
+  --surface:    rgba(255,255,255,0.04);   /* superficie muy sutil             */
+  --glass:      rgba(255,255,255,0.055);  /* tarjetas glass base              */
+  --glass-hi:   rgba(255,255,255,0.10);   /* tarjetas glass en hover          */
+
+  /* ── Bordes ── */
+  --border:     rgba(255,255,255,0.08);   /* borde sutil                      */
+  --border-hi:  rgba(255,255,255,0.18);   /* borde iluminado en hover         */
+
+  /* ── Texto ── */
+  --text:       #e8e8e4;                  /* texto principal                  */
+  --text-dim:   rgba(220,220,210,0.58);   /* texto secundario / atenuado      */
+  --text-mute:  rgba(220,220,210,0.30);   /* texto muy tenue / decorativo     */
+  --accent:     #d4d4c8;                  /* acento cálido grisáceo           */
+
+  /* ── Tipografías ── */
+  --mono:    'DM Mono', 'Courier New', monospace; /* UI, etiquetas, código    */
+  --display: 'Syne', sans-serif;                  /* logo, títulos            */
+  --serif:   'Instrument Serif', Georgia, serif;  /* nombre hero, headings    */
+
+  /* ── Curvas de animación ── */
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);           /* ease estándar     */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);      /* efecto rebote     */
+
+  /* ── Duraciones ── */
+  --motion-fast: 180ms;
+  --motion-base: 320ms;
+  --motion-slow: 650ms;
+}
+
+
+/* ───────────────────────────────────────────────────
+   3. SCROLLBAR & SELECCIÓN
+   ─────────────────────────────────────────────────── */
+
+/* Scrollbar delgado de 3 px con thumb translúcido */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+/* Selección de texto */
 ::selection { background: rgba(255,255,255,0.15); color: #fff; }
 
-/* ── Scroll progress bar ─────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   4. SCROLL PROGRESS BAR
+   Línea de 1 px en la cima de la pantalla que indica
+   el progreso de lectura.
+   JS actualiza transform: scaleX() cada frame (no width,
+   para evitar reflow). transform-origin: left hace que
+   la barra crezca de izquierda a derecha.
+   ─────────────────────────────────────────────────── */
 .scroll-bar {
   position: fixed; top: 0; left: 0;
-  height: 1px; width: 100%;
-  transform: scaleX(0); transform-origin: left;
+  height: 1px; width: 100%;           /* ocupa todo el ancho; JS recorta con scaleX */
+  transform: scaleX(0);               /* empieza colapsada */
+  transform-origin: left;             /* crece desde la izquierda */
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
   z-index: 9999;
 }
 
-/* ── Noise overlay ───────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   5. NOISE OVERLAY
+   Textura de grano (SVG inlined como data-URI) sobre
+   todo el sitio. pointer-events:none evita que capture
+   clics. z-index muy alto para estar encima de todo
+   excepto toasts y overlays críticos.
+   ─────────────────────────────────────────────────── */
 body::before {
   content: ''; position: fixed; inset: 0; z-index: 9998;
   pointer-events: none;
@@ -67,45 +142,82 @@ body::before {
   background-repeat: repeat; background-size: 200px 200px;
 }
 
-/* ── Cinematic BG ────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   6. CINEMATIC BG — Fondo cinematográfico parallax
+   JS crea .cinema-layer dentro de #cinema-bg y alterna
+   entre ellas según el progreso de scroll.
+   Cada layer usa will-change:opacity para que el browser
+   la promueva a su propia capa compuesta (GPU).
+   La transición de opacity la gestiona CSS; JS solo
+   agrega/quita .active y .previous.
+   ─────────────────────────────────────────────────── */
 #cinema-bg {
-  position: fixed; inset: 0; z-index: -2; background: var(--bg); overflow: hidden;
+  position: fixed; inset: 0; z-index: -2;
+  background: var(--bg);  /* color de fondo mientras cargan las imágenes */
+  overflow: hidden;        /* recorta el scale(1.35) para evitar bordes */
 }
+
 .cinema-layer {
-  position: absolute; inset: -15%;
+  position: absolute; inset: -15%;   /* sobredimensionada para el parallax */
   background-size: cover; background-position: center;
-  opacity: 0;
-  transition: opacity 1.6s var(--ease);
-  filter: brightness(0.12) saturate(0.28) grayscale(0.5);
-  will-change: opacity;
+  opacity: 0;                         /* oculta por defecto */
+  transition: opacity 1.6s var(--ease); /* fundido suave entre imágenes */
+  filter: brightness(0.12) saturate(0.28) grayscale(0.5); /* aspecto cinematográfico */
+  will-change: opacity;               /* GPU layer para la transición */
 }
-.cinema-layer.active { opacity: 1; }
+.cinema-layer.active { opacity: 1; } /* imagen visible actualmente */
+
+/* Vignette radial encima de las capas de imagen */
 #cinema-bg::after {
   content: ''; position: absolute; inset: 0;
   background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.82) 100%);
   pointer-events: none; z-index: 1;
 }
+
+/* Overlay de color (tinte) que JS cambia según la sección.
+   La transición de 2 s evita cambios bruscos de color. */
 #cinema-tint {
   position: fixed; inset: 0; z-index: -1;
-  pointer-events: none; transition: background 2s var(--ease);
+  pointer-events: none;
+  transition: background 2s var(--ease);
 }
 
-/* ── Page transition ─────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   7. PAGE TRANSITION
+   Overlay negro de pantalla completa que entra desde
+   arriba al hacer clic en un link interno.
+   JS agrega .entering → CSS anima translateY(-100% → 0).
+   pointer-events:none evita bloquear clics cuando
+   está fuera de pantalla.
+   ─────────────────────────────────────────────────── */
 .page-transition {
   position: fixed; inset: 0; z-index: 9999;
-  background: var(--bg); transform: translateY(-100%);
-  transition: transform 0.5s var(--ease); pointer-events: none;
+  background: var(--bg);
+  transform: translateY(-100%);        /* fuera de pantalla hacia arriba */
+  transition: transform 0.5s var(--ease);
+  pointer-events: none;
 }
-.page-transition.entering { transform: translateY(0); }
+.page-transition.entering {
+  transform: translateY(0);            /* cubre la pantalla al navegar */
+}
 
-/* ── NAVBAR ──────────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   8. NAVBAR — Barra de navegación fija
+   ─────────────────────────────────────────────────── */
+
+/* ── Barra ── */
 .navbar {
   position: fixed; top: 0; width: 100%;
   background: transparent;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid transparent; /* reserva espacio; se colorea con .scrolled */
   z-index: 1000;
   transition: background 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.3s var(--ease);
 }
+
+/* JS agrega .scrolled cuando scroll > 40 px → activa blur + borde */
 .navbar.scrolled {
   background: rgba(8,8,8,0.88);
   backdrop-filter: blur(20px);
@@ -113,16 +225,22 @@ body::before {
   border-bottom-color: var(--border);
   box-shadow: 0 4px 30px rgba(0,0,0,0.5);
 }
+
 .nav-container {
   max-width: 1100px; margin: auto;
   padding: 1.1rem 6vw;
   display: flex; align-items: center; justify-content: space-between;
 }
+
+/* ── Logo ── */
 .logo {
   font-family: var(--display); font-size: 0.85rem; font-weight: 700;
   letter-spacing: 0.28em; text-transform: uppercase;
   color: var(--text); text-decoration: none;
+  /* JS agrega .shimmer-text-strong al cargar */
 }
+
+/* ── Links de escritorio ── */
 .nav-links {
   list-style: none; display: flex; gap: 2.5rem;
 }
@@ -133,6 +251,7 @@ body::before {
   padding: 0.4rem 0; display: inline-block; position: relative;
   transition: color 0.25s var(--ease);
 }
+/* Línea subrayado animada que crece desde la izquierda */
 .nav-links a::after {
   content: ''; position: absolute; left: 0; bottom: -1px;
   width: 0; height: 1px; background: var(--accent);
@@ -141,7 +260,7 @@ body::before {
 .nav-links a:hover, .nav-links a.active { color: var(--text); }
 .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
 
-/* Hamburger */
+/* ── Botón hamburger (visible solo en móvil) ── */
 .menu-toggle {
   display: none; flex-direction: column;
   gap: 5px; cursor: pointer; padding: 5px; z-index: 1001;
@@ -152,13 +271,14 @@ body::before {
   background: var(--text-dim); border-radius: 1px;
   transition: all 0.38s var(--ease); transform-origin: center;
 }
+/* Animación hamburger → X al abrir el menú */
 .menu-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); background: var(--text); }
 .menu-toggle.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .menu-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); background: var(--text); }
 
-/* Mobile drawer */
+/* ── Drawer lateral móvil ── */
 .nav-drawer {
-  position: fixed; top: 0; right: -100%;
+  position: fixed; top: 0; right: -100%; /* fuera de pantalla por defecto */
   width: min(280px, 78vw); height: 100vh;
   background: rgba(8,8,8,0.97);
   backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -167,7 +287,8 @@ body::before {
   display: flex; flex-direction: column;
   padding: 6rem 2.5rem 3rem; gap: 0.2rem;
 }
-.nav-drawer.open { right: 0; }
+.nav-drawer.open { right: 0; } /* JS agrega .open para deslizar el panel */
+
 .nav-drawer a {
   display: block; text-decoration: none;
   font-family: var(--display); font-size: 1.3rem; font-weight: 700;
@@ -178,14 +299,20 @@ body::before {
 .nav-drawer a:hover, .nav-drawer a.active { color: var(--text); padding-left: 0.5rem; }
 .nav-drawer a:last-child { border-bottom: none; }
 
+/* ── Overlay oscuro detrás del drawer ── */
 .nav-overlay {
   position: fixed; inset: 0; z-index: 998;
   background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
-  opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease);
+  opacity: 0; pointer-events: none; /* invisible e inactivo por defecto */
+  transition: opacity 0.4s var(--ease);
 }
-.nav-overlay.open { opacity: 1; pointer-events: all; }
+.nav-overlay.open { opacity: 1; pointer-events: all; } /* JS agrega .open */
 
-/* ── Hero (sub-pages) ────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   9. HERO — Sección de portada de cada sub-página
+   ─────────────────────────────────────────────────── */
+
 .hero {
   min-height: 68vh;
   display: flex; align-items: flex-end; justify-content: flex-start;
@@ -193,22 +320,33 @@ body::before {
   position: relative; overflow: hidden; background: transparent;
 }
 
-/* scan-lines */
+/* ── Líneas de escaneo (efecto CRT) ──
+   Gradiente de líneas horizontales de 4 px que se desplazan
+   infinitamente para dar aspecto de monitor de cine.
+   pointer-events:none para no interferir con clics. */
 .hero::before {
   content: ''; position: absolute; inset: 0; z-index: 1;
   background: repeating-linear-gradient(
     0deg, transparent, transparent 3px,
     rgba(255,255,255,0.008) 3px, rgba(255,255,255,0.008) 4px
   );
-  pointer-events: none; animation: scanLines 12s linear infinite;
+  pointer-events: none;
+  animation: scanLines 12s linear infinite; /* velocidad del desplazamiento */
 }
 @keyframes scanLines { to { background-position: 0 80px; } }
 
+/* ── Imagen de fondo con parallax ──
+   JS la mueve en Y cada frame. inset:-25% sobredimensiona
+   para que no queden bordes visibles al desplazarla.
+   filter oscurece la imagen para que el texto sea legible. */
 .hero-parallax-bg {
-  position: absolute; inset: -25%; background-size: cover; background-position: center;
-  filter: brightness(0.13) saturate(0.3) grayscale(0.5); z-index: 0;
-  will-change: transform;
+  position: absolute; inset: -25%;
+  background-size: cover; background-position: center;
+  filter: brightness(0.13) saturate(0.3) grayscale(0.5);
+  z-index: 0; will-change: transform;
 }
+
+/* ── Video de fondo (opcional por sub-página) ── */
 .hero-video-layer {
   position: absolute; inset: 0; z-index: 0;
   overflow: hidden; pointer-events: none;
@@ -218,12 +356,15 @@ body::before {
   object-fit: cover; opacity: 0.34;
   filter: brightness(0.5) saturate(0.88) contrast(1.05);
 }
+/* Gradiente que oscurece el video hacia abajo */
 .hero-video-layer::after {
   content: ''; position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(8,8,8,0.34) 0%, rgba(8,8,8,0.62) 100%);
 }
 
-/* vignette */
+/* ── Viñeta radial encima de todo el hero ──
+   Doble gradiente: uno desde arriba y otro radial desde el centro
+   para crear profundidad y forzar legibilidad del texto. */
 .hero::after {
   content: ''; position: absolute; inset: 0; z-index: 1;
   background:
@@ -232,7 +373,8 @@ body::before {
   pointer-events: none;
 }
 
-/* ── Hero content — editorial left-aligned ── */
+/* ── Contenido del hero (texto editorial alineado a la izquierda) ──
+   opacity:0 + animation heroReveal → aparece al cargar la página. */
 .hero-content {
   position: relative; z-index: 2;
   max-width: 680px;
@@ -243,6 +385,8 @@ body::before {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Badge de tecnología (ej: "JavaScript · Discord.js v14 · Node.js") ──
+   Etiqueta pequeña con borde y ícono decorativo (::before). */
 .project-badge {
   display: inline-flex; align-items: center; gap: 0.5rem;
   font-family: var(--mono); font-size: 0.68rem;
@@ -251,35 +395,42 @@ body::before {
   padding: 0.28rem 0.8rem; border-radius: 2px;
   margin-bottom: 1.8rem; background: var(--surface);
   backdrop-filter: blur(8px);
+  /* JS agrega .shimmer-text para el efecto de brillo */
 }
 .project-badge::before {
   content: '◆'; font-size: 0.4rem; color: var(--accent); opacity: 0.7;
 }
 
+/* ── Eyebrow (texto pequeño sobre el título, ej: "proyecto — dic 2022") ── */
 .hero-eyebrow {
   font-family: var(--mono); font-size: 0.7rem;
   color: var(--text-mute); letter-spacing: 0.18em; text-transform: uppercase;
   margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.7rem;
 }
+/* Línea decorativa antes del eyebrow */
 .hero-eyebrow::before {
   content: ''; display: inline-block; width: 24px; height: 1px;
   background: linear-gradient(90deg, var(--accent), transparent);
 }
 
+/* ── Título principal del hero ── */
 .hero h1 {
   font-family: var(--serif); font-size: clamp(2.6rem, 5.5vw, 4.4rem);
   font-weight: 400; color: #fff; line-height: 1.0;
   margin-bottom: 1.2rem; letter-spacing: -0.02em;
 }
-.hero h1 em { font-style: italic; color: var(--text-dim); }
+.hero h1 em { font-style: italic; color: var(--text-dim); } /* segunda línea en cursiva */
 
+/* ── Descripción corta bajo el título ── */
 .hero-desc {
   font-family: var(--mono); font-size: 0.86rem; color: var(--text-dim);
   line-height: 1.85; max-width: 500px; margin-bottom: 2.2rem;
 }
 
+/* ── Botones CTA del hero ── */
 .cta-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
 
+/* Base común para todos los botones */
 .btn {
   display: inline-flex; align-items: center; gap: 0.5rem;
   font-family: var(--mono); font-size: 0.78rem;
@@ -287,46 +438,65 @@ body::before {
   padding: 0.7rem 1.4rem; border-radius: 4px;
   transition: all var(--motion-fast) var(--ease); cursor: pointer; border: none;
 }
+/* Botón principal — glass con borde iluminado */
 .btn-primary {
   background: rgba(255,255,255,0.08); color: var(--text);
   border: 1px solid var(--border-hi); backdrop-filter: blur(8px);
 }
 .btn-primary:hover { background: rgba(255,255,255,0.14); }
-.btn-primary:active { transform: translateY(1px); }
+.btn-primary:active { transform: translateY(1px); } /* feedback táctil */
+
+/* Botón secundario — solo borde */
 .btn-secondary {
   background: transparent; color: var(--text-dim); border: 1px solid var(--border);
 }
 .btn-secondary:hover { border-color: var(--border-hi); color: var(--text); }
 
-/* ── Sections ────────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   10. SECTIONS — Contenedor genérico
+   ─────────────────────────────────────────────────── */
+
 .section { padding: 6rem 6vw; max-width: 1100px; margin: 0 auto; }
 
+/* Etiqueta de sección ("— sobre el proyecto", "— características") */
 .section-label {
   font-family: var(--mono); font-size: 0.7rem;
   color: var(--text-mute); letter-spacing: 0.18em; text-transform: uppercase;
   margin-bottom: 3rem; display: flex; align-items: center; gap: 0.7rem;
 }
+/* Línea decorativa a la derecha de la etiqueta, se extiende hasta 120 px */
 .section-label::after {
   content: ''; flex: 1; height: 1px;
   background: linear-gradient(90deg, var(--border), transparent);
   max-width: 120px;
 }
 
+/* Título grande de sección (no usado en todas las sub-páginas) */
 .section-title {
   font-family: var(--serif); font-size: clamp(1.8rem, 3.5vw, 2.6rem);
   font-weight: 400; color: #fff; line-height: 1.1;
   margin-bottom: 3rem; position: relative; display: inline-block; padding-bottom: 1rem;
 }
+/* Línea corta decorativa bajo el título */
 .section-title::after {
   content: ''; position: absolute; left: 0; bottom: 0;
   width: 32px; height: 1px;
   background: linear-gradient(90deg, var(--accent), transparent);
 }
 
-/* ── About / main card ────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   11. ABOUT CARD — Tarjeta glass principal
+   Efecto de glow que sigue al mouse:
+   JS actualiza --about-glow-x / --about-glow-y con la
+   posición del cursor; el ::before usa esas variables
+   para posicionar el gradiente radial.
+   transform-style:preserve-3d habilita el efecto tilt 3D.
+   ─────────────────────────────────────────────────── */
 .about-main {
-  --about-glow-x: 50%;
-  --about-glow-y: 50%;
+  --about-glow-x: 50%; /* posición X del glow (inicia centrado) */
+  --about-glow-y: 50%; /* posición Y del glow (inicia centrado) */
   position: relative;
   background: linear-gradient(160deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
   border: 1px solid rgba(255,255,255,0.10);
@@ -336,14 +506,18 @@ body::before {
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 20px 48px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
   transition:
-    transform 320ms var(--ease-spring),
+    transform 320ms var(--ease-spring),   /* suaviza el tilt 3D */
     border-color 240ms var(--ease),
     box-shadow 320ms var(--ease);
   transform-style: preserve-3d;
 }
+/* Glow radial que sigue el cursor — JS mueve las variables CSS */
 .about-main::before {
   content: ''; position: absolute; inset: 0; border-radius: inherit;
-  background: radial-gradient(circle at var(--about-glow-x) var(--about-glow-y), rgba(212,212,200,0.16), transparent 42%);
+  background: radial-gradient(
+    circle at var(--about-glow-x) var(--about-glow-y),
+    rgba(212,212,200,0.16), transparent 42%
+  );
   opacity: 0.65; pointer-events: none;
 }
 .about-main:hover {
@@ -351,17 +525,31 @@ body::before {
   box-shadow: 0 28px 58px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.10);
 }
 
-/* ── About grid ──────────────────────────────────── */
-.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-.about-text p { font-family: var(--mono); font-size: 0.88rem; color: var(--text-dim); line-height: 1.9; margin-bottom: 1.2rem; }
 
+/* ───────────────────────────────────────────────────
+   12. ABOUT GRID — Texto, skill tags e imagen
+   ─────────────────────────────────────────────────── */
+
+/* Grid de 2 columnas: tarjeta de texto a la izquierda, imagen a la derecha */
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+
+.about-text p {
+  font-family: var(--mono); font-size: 0.88rem;
+  color: var(--text-dim); line-height: 1.9; margin-bottom: 1.2rem;
+  /* JS aplica blur-in palabra por palabra a este elemento */
+}
+
+/* ── Skill tags ──
+   Aparecen con JS (setTimeout escalonado) → cada una recibe
+   .visible que activa la transición de opacity + translateY. */
 .skills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.8rem; }
+
 .skill-tag {
   font-family: var(--mono); font-size: 0.72rem;
   background: var(--glass); border: 1px solid var(--border);
   color: var(--text-dim); padding: 0.3rem 0.8rem; border-radius: 3px;
   letter-spacing: 0.04em; text-transform: lowercase;
-  opacity: 0; transform: translateY(6px);
+  opacity: 0; transform: translateY(6px); /* oculta antes de que JS agregue .visible */
   transition:
     opacity 0.4s var(--ease),
     transform 0.4s var(--ease),
@@ -372,6 +560,7 @@ body::before {
 .skill-tag.visible { opacity: 1; transform: none; }
 .skill-tag:hover { border-color: var(--border-hi); color: var(--text); transform: translateY(-2px); }
 
+/* ── Imagen / carousel a la derecha ── */
 .about-image { text-align: center; }
 .about-image > img {
   width: 100%; max-width: 420px; border-radius: 6px;
@@ -381,22 +570,34 @@ body::before {
 }
 .about-image > img:hover { transform: scale(1.02); }
 
-/* ── Carousel ────────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   13. CAROUSEL — Galería de imágenes
+   JS controla qué slide es visible con translateX en
+   .carousel-track. Los dots se crean dinámicamente.
+   ─────────────────────────────────────────────────── */
+
 .carousel-wrap {
   position: relative; border-radius: 6px; overflow: hidden;
   border: 1px solid var(--border); background: #000;
   width: 100%; max-width: 480px; margin: 0 auto;
   box-shadow: 0 12px 40px rgba(0,0,0,0.5);
 }
+
+/* Track: flex de imágenes; JS mueve con translateX(-100% * índice) */
 .carousel-track {
-  display: flex; transition: transform 0.55s var(--ease);
+  display: flex;
+  transition: transform 0.55s var(--ease); /* animación de deslizamiento */
   will-change: transform;
 }
 .carousel-track img {
-  min-width: 100%; width: 100%; height: 280px;
+  min-width: 100%; width: 100%; height: 280px; /* ← altura de cada slide */
   object-fit: cover; display: block;
-  user-select: none; -webkit-user-drag: none; filter: brightness(0.95);
+  user-select: none; -webkit-user-drag: none;
+  filter: brightness(0.95);
 }
+
+/* Botones prev / next */
 .carousel-btn {
   position: absolute; top: 50%; transform: translateY(-50%);
   width: 32px; height: 32px;
@@ -410,6 +611,8 @@ body::before {
 .carousel-btn:hover { background: rgba(30,30,30,0.95); color: var(--text); border-color: var(--border-hi); }
 .carousel-btn.prev { left: 8px; }
 .carousel-btn.next { right: 8px; }
+
+/* Dots de posición (creados por JS) */
 .carousel-dots {
   position: absolute; bottom: 10px; left: 50%;
   transform: translateX(-50%); display: flex; gap: 5px; z-index: 10;
@@ -420,12 +623,24 @@ body::before {
   transition: background 0.22s, transform 0.22s;
   border: none; padding: 0;
 }
+/* Dot activo — se agranda y toma el color de acento */
 .carousel-dot.active { background: var(--accent); transform: scale(1.4); }
 
-/* ── Feature / Blog Cards ────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   14. BLOG / FEATURE CARDS — Tarjetas de características
+   Usadas en la sección "— características" de cada sub-página.
+   Efecto de hover: sube con translateY(-5px), ilumina el
+   borde superior con un gradiente que crece (::before) y
+   aparece una línea de glow en el borde superior (::after).
+   ─────────────────────────────────────────────────── */
+
 .blog-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* responsivo automático */
+  gap: 1rem;
 }
+
 .blog-card {
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -439,20 +654,24 @@ body::before {
     box-shadow var(--motion-base) var(--ease),
     border-color var(--motion-base) var(--ease);
 }
+
+/* Línea de glow en el borde superior que aparece en hover */
 .blog-card::before {
   content: ''; position: absolute; top: 0; left: 0;
   width: 0; height: 1px;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
   transition: width 0.45s var(--ease);
 }
+
 .blog-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-5px);         /* sube la tarjeta */
   border-color: rgba(255,255,255,0.18);
   box-shadow: 0 14px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
 }
-.blog-card:hover::before { width: 100%; }
-.blog-card:active { transform: translateY(-2px) scale(0.997); }
+.blog-card:hover::before { width: 100%; } /* expande la línea de glow */
+.blog-card:active { transform: translateY(-2px) scale(0.997); } /* feedback de clic */
 
+/* ── Interior de la tarjeta ── */
 .blog-date {
   font-family: var(--mono); font-size: 0.7rem;
   text-transform: uppercase; letter-spacing: 0.1em;
@@ -467,7 +686,16 @@ body::before {
   font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); line-height: 1.8;
 }
 
-/* ── Scroll reveal ───────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   15. SCROLL REVEAL
+   Estado inicial oculto; JS agrega .visible cuando el
+   elemento entra en viewport (IntersectionObserver).
+   Variantes: reveal (desde abajo), reveal-left,
+   reveal-right (desde los lados), reveal-scale (escala).
+   filter:blur(2px) da un efecto "desenfoque de entrada".
+   ─────────────────────────────────────────────────── */
+
 .reveal, .reveal-left, .reveal-right, .reveal-scale {
   opacity: 0; filter: blur(2px);
   transition:
@@ -475,15 +703,28 @@ body::before {
     transform var(--motion-slow) var(--ease),
     filter var(--motion-slow) var(--ease);
 }
-.reveal       { transform: translateY(20px); }
-.reveal-left  { transform: translateX(-28px); }
-.reveal-right { transform: translateX(28px); }
-.reveal-scale { transform: scale(0.95); }
-.reveal.visible, .reveal-left.visible, .reveal-right.visible, .reveal-scale.visible {
+.reveal       { transform: translateY(20px); }    /* desde abajo */
+.reveal-left  { transform: translateX(-28px); }   /* desde la izquierda */
+.reveal-right { transform: translateX(28px); }    /* desde la derecha */
+.reveal-scale { transform: scale(0.95); }         /* desde más pequeño */
+
+/* Estado final — JS agrega .visible */
+.reveal.visible,
+.reveal-left.visible,
+.reveal-right.visible,
+.reveal-scale.visible {
   opacity: 1; transform: none; filter: blur(0);
 }
 
-/* ── Blur-in word by word ────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   16. BLUR-IN — Reveal palabra por palabra
+   JS divide el texto en .blur-word con --wi (índice).
+   transition-delay: calc(var(--wi) * 55ms) escalona
+   la aparición de cada palabra.
+   JS agrega .visible al contenedor cuando entra en viewport.
+   ─────────────────────────────────────────────────── */
+
 .blur-in-text .blur-word {
   display: inline-block; opacity: 0;
   filter: blur(6px); transform: translateY(4px);
@@ -491,45 +732,73 @@ body::before {
     opacity 0.55s var(--ease),
     filter 0.55s var(--ease),
     transform 0.45s var(--ease);
-  transition-delay: calc(var(--wi, 0) * 55ms);
+  transition-delay: calc(var(--wi, 0) * 55ms); /* delay por índice de palabra */
 }
+/* JS agrega .visible al padre → las palabras aparecen en cascada */
 .blur-in-text.visible .blur-word { opacity: 1; filter: blur(0); transform: none; }
 
-/* ── Text shimmer ────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   17. TEXT SHIMMER — Gradiente animado
+   background-clip:text recorta el gradiente al contorno
+   del texto. -webkit-text-fill-color:transparent oculta
+   el color original del texto para que se vea el gradiente.
+   .shimmer-text       → variante normal (para badges)
+   .shimmer-text-strong → variante brillante (para el logo)
+   ─────────────────────────────────────────────────── */
+
 .shimmer-text {
   background: linear-gradient(90deg,
     var(--text-dim) 0%, var(--text-dim) 35%,
-    rgba(255,255,255,0.92) 50%,
+    rgba(255,255,255,0.92) 50%,          /* destello central */
     var(--text-dim) 65%, var(--text-dim) 100%
   );
-  background-size: 250% 100%;
+  background-size: 250% 100%;            /* más ancho que el elemento para animar */
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
   animation: shimmerMove 3.8s linear infinite;
 }
+
 .shimmer-text-strong {
   background: linear-gradient(90deg,
     var(--accent) 0%, var(--accent) 30%,
-    #fff 50%, var(--accent) 70%, var(--accent) 100%
+    #fff 50%,                            /* destello blanco más brillante */
+    var(--accent) 70%, var(--accent) 100%
   );
   background-size: 250% 100%;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
   animation: shimmerMove 4.2s linear infinite;
 }
+
+/* El gradiente se desplaza de derecha a izquierda */
 @keyframes shimmerMove {
-  0%   { background-position: 150% center; }
-  100% { background-position: -50% center; }
+  0%   { background-position: 150% center; } /* empieza fuera a la derecha */
+  100% { background-position: -50% center; } /* termina fuera a la izquierda */
 }
 
-/* ── Footer ──────────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   18. FOOTER
+   ─────────────────────────────────────────────────── */
+
 .footer {
   border-top: 1px solid var(--border);
   text-align: center; padding: 2.5rem 2rem; margin-top: 4rem;
 }
 .footer p { font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute); letter-spacing: 0.1em; }
 
-/* ── Scroll-to-top ───────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   19. SCROLL-TO-TOP — Botón flotante
+   JS crea el botón y lo agrega al DOM.
+   opacity:0 + visibility:hidden = invisible pero no ocupa
+   espacio en el flujo. JS agrega .visible para mostrarlo.
+   La combinación opacity + visibility permite transicionar
+   la visibilidad sin que el botón sea cliclable mientras
+   está invisible.
+   ─────────────────────────────────────────────────── */
+
 .scroll-top-btn {
   position: fixed; bottom: 2rem; right: 2rem;
   width: 36px; height: 36px;
@@ -537,31 +806,71 @@ body::before {
   color: rgba(220,220,210,0.5);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 4px; cursor: pointer;
-  opacity: 0; visibility: hidden;
+  opacity: 0; visibility: hidden; /* oculto por defecto */
   transition: opacity 0.3s ease, visibility 0.3s ease, background 0.3s ease, color 0.3s ease;
   z-index: 998; font-size: 0.78rem;
   display: flex; align-items: center; justify-content: center;
 }
-.scroll-top-btn.visible { opacity: 1; visibility: visible; }
+.scroll-top-btn.visible { opacity: 1; visibility: visible; } /* JS agrega .visible */
 .scroll-top-btn:hover { background: rgba(255,255,255,0.1); color: #e2e2e0; }
 
-/* ── Responsive ──────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────
+   20. RESPONSIVE
+   ─────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
+  /* About: apila columnas verticalmente */
   .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+
+  /* Hero: reduce padding y altura mínima */
   .hero { padding: 4rem 5vw 3rem; min-height: 55vh; align-items: flex-end; }
+
+  /* Secciones: reduce padding general */
   .section { padding: 4rem 5vw; }
-  .nav-links { display: none; }
+
+  /* Navbar: oculta links de escritorio y muestra hamburger */
+  .nav-links   { display: none; }
   .menu-toggle { display: flex; }
+
+  /* Carousel: reduce altura de las imágenes */
   .carousel-track img { height: 200px; }
+
+  /* Título del hero: ajuste fluido para pantallas pequeñas */
   .hero h1 { font-size: clamp(2.2rem, 8vw, 3rem); }
 }
 
+
+/* ───────────────────────────────────────────────────
+   21. REDUCED MOTION — Accesibilidad
+   Respeta prefers-reduced-motion del sistema operativo.
+   Desactiva TODAS las animaciones y transiciones.
+   Restaura colores del shimmer (sin background-clip).
+   Muestra el texto del blur-in directamente.
+   ─────────────────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
+  /* Colapsa todas las duraciones a casi 0 sin eliminar las transiciones
+     (para no romper JS que depende de transitionend). */
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+
+  /* Oculta el video (causa movimiento continuo) */
   .hero-video-layer { display: none; }
-  .shimmer-text, .shimmer-text-strong { animation: none; -webkit-text-fill-color: inherit; background: none; color: inherit; }
-  .blur-in-text .blur-word { opacity: 1; filter: none; transform: none; transition: none; }
+
+  /* Shimmer: restaura colores de texto normales */
+  .shimmer-text,
+  .shimmer-text-strong {
+    animation: none;
+    -webkit-text-fill-color: inherit;
+    background: none;
+    color: inherit;
+  }
+
+  /* Blur-in: muestra el texto directo, sin transición */
+  .blur-in-text .blur-word {
+    opacity: 1; filter: none; transform: none; transition: none;
+  }
 }

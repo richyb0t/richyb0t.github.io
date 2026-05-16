@@ -90,7 +90,7 @@ window.addEventListener('scroll', () => { _scrollY = window.scrollY; }, { passiv
 
   let wasScrolled = false;
   window.addEventListener('scroll', () => {
-    const isScrolled = _scrollY > 40; // <- umbral en px para activar el blur
+    const isScrolled = _scrollY > 30; // <- umbral en px para activar el blur
     // Solo modifica el DOM si el estado cambió (evita reflows innecesarios)
     if (isScrolled !== wasScrolled) {
       nav.classList.toggle('scrolled', isScrolled);

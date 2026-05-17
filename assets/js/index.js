@@ -235,7 +235,7 @@ document.addEventListener('click', e => {
   });
 
   // La primera imagen también aparece en el fondo del hero
-  if (heroBg) heroBg.style.backgroundImage = `url('${images[0]}')`;
+  //if (heroBg) heroBg.style.backgroundImage = `url('${images[0]}')`;
 
   // heroH se necesita para calcular cuándo desvanece el texto del hero
   let heroH = hero ? hero.offsetHeight : 0;
@@ -283,6 +283,7 @@ document.addEventListener('click', e => {
     const sy       = smoothY;
     const maxH     = document.documentElement.scrollHeight - window.innerHeight;
     const progress = sy / (maxH || 1); // 0 = inicio, 1 = final de página
+    // Oculta el cinema-bg mientras estamos en el hero
     const vh       = window.innerHeight;
 
     /* Mueve las capas de fondo

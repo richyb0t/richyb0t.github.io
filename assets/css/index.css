@@ -137,6 +137,7 @@ body.loaded { opacity: 1; }
 #cinema-bg::before {
   content: ''; position: absolute; inset: 0; z-index: 1;
   background:
+    linear-gradient(180deg, #080808 0%, transparent 18%),
     radial-gradient(circle at 50% 30%, rgba(212,212,200,0.10), transparent 55%),
     linear-gradient(180deg, rgba(8,8,8,0.10), rgba(8,8,8,0.38));
   pointer-events: none;
@@ -274,10 +275,12 @@ body.loaded { opacity: 1; }
   min-height: 100vh;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 6vw;
-  position: relative; overflow: hidden;
+  position: relative; 
+  /*overflow: hidden;
+  background: var(--bg);*/
 }
 
-/* ── Imagen de fondo con parallax (JS la mueve cada frame) ── */
+/* ── Imagen de fondo con parallax (JS la mueve cada frame) ── 
 .hero-parallax-bg {
   position: absolute; inset: -20%;
   background-size: cover; background-position: center;
@@ -285,11 +288,13 @@ body.loaded { opacity: 1; }
   transform: scale(1.4); z-index: -1;
   will-change: transform, background-position;
 }
+  */
 
 /* ── Video de fondo ── */
 .hero-video-layer {
   position: absolute; inset: 0; z-index: 0;
-  pointer-events: none; overflow: hidden;
+  pointer-events: none; 
+  overflow: hidden;
 }
 .hero-video {
   width: 100%; height: 100%;
@@ -302,6 +307,13 @@ body.loaded { opacity: 1; }
   content: ''; position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(8,8,8,0.34) 0%, rgba(8,8,8,0.62) 100%);
 }
+/* Bloquea el cinema-bg dentro del hero con una capa sólida */
+.hero-video-layer::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--bg);
+  z-index: -1;
+}
 
 /* ── Líneas de escaneo (efecto CRT) ── */
 .hero::before {
@@ -311,6 +323,22 @@ body.loaded { opacity: 1; }
     rgba(255,255,255,0.009) 3px, rgba(255,255,255,0.009) 4px
   );
   pointer-events: none; animation: scanLines 12s linear infinite;
+}
+/* Fade que se extiende MÁS ALLÁ del hero hacia la siguiente sección */
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 280px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(8,8,8,0.6) 50%,
+    rgba(8,8,8,0.92) 80%,
+    #080808 100%
+  );
+  z-index: 10;
+  pointer-events: none;
 }
 @keyframes scanLines { to { background-position: 0 80px; } }
 

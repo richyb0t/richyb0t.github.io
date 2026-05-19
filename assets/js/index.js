@@ -187,6 +187,7 @@ document.addEventListener('click', e => {
   /* Imágenes de fondo (se alternan según el progreso de scroll)
      Cambia las URLs para cambiar las fotos de fondo del sitio */
   const images = [
+    'https://i.postimg.cc/15mJzKzx/fondo1.png',
     'https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=1800&auto=format&fit=crop&q=75',
     'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1800&auto=format&fit=crop&q=75',
     'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1800&auto=format&fit=crop&q=75',

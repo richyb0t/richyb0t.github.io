@@ -1000,10 +1000,37 @@ body.loaded { opacity: 1; }
    ═══════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 900px) {
-  /* Hero: apila columnas verticalmente, foto arriba */
-  .hero { flex-direction: column; justify-content: center; gap: 3rem; padding: 8rem 6vw 5rem; }
+  /* Hero: apila columnas verticalmente, foto arriba, todo centrado */
+  .hero {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2.2rem;
+    padding: 7rem 6vw 5rem;
+    text-align: center;
+  }
   .hero-right { order: -1; }
-  .hero-left  { max-width: 100%; }
+  .hero-left  { max-width: 100%; align-items: center; }
+
+  /* Tamaño de avatar más apropiado en móvil */
+  .hero-avatar-wrap {
+    width: clamp(140px, 42vw, 200px);
+    height: clamp(140px, 42vw, 200px);
+  }
+
+  /* Nav interna centrada */
+  .hero-nav { align-items: center; }
+
+  /* Scroll hint centrado */
+  .hero-scroll-hint { justify-content: center; }
+
+  /* Meta centrado */
+  .hero-meta {
+    position: static;
+    text-align: center;
+    margin-top: -0.5rem;
+  }
+
   .hero-parallax-bg { filter: brightness(0.18) saturate(0.38) grayscale(0.3); }
 
   /* About: una sola columna */
@@ -1020,9 +1047,12 @@ body.loaded { opacity: 1; }
 
 @media (max-width: 600px) {
   .projects-grid { grid-template-columns: 1fr; }
-  .section  { padding: 6rem 5vw 4rem; }
-  .hero     { padding: 7rem 5vw 4rem; }
-  .contact-heading { font-size: 2.8rem; }
+  .section  { padding: 5rem 5vw 4rem; }
+  .hero     { padding: 6rem 5vw 3rem; gap: 1.8rem; }
+  .contact-heading { font-size: 2.4rem; }
+  .about-name { font-size: 2.4rem; }
+  /* Botón enviar full-width en móvil */
+  .btn-send { align-self: stretch; justify-content: center; }
 }
 
 
@@ -1069,12 +1099,12 @@ img {
   aspect-ratio: attr(width) / attr(height);
 }
 
-/* Imagen del hero: tamaño estable desde antes de cargar */
+/* Imagen del hero: tamaño estable — usa el 100% del wrap que tiene clamp() */
 .hero-avatar {
-  width: 220px;
-  height: 220px;
-  min-width: 220px;
-  min-height: 220px;
+  width: 100%;
+  height: 100%;
+  /* aspect-ratio evita layout shift sin fijar px absolutos */
+  aspect-ratio: 1 / 1;
 }
 
 /* will-change solo mientras se anima el about-tilt; JS lo agrega y quita */

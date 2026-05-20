@@ -186,11 +186,23 @@ document.addEventListener('click', e => {
 
   /* Imágenes de fondo (se alternan según el progreso de scroll)
      Cambia las URLs para cambiar las fotos de fondo del sitio */
+  /* Detecta soporte WebP una sola vez */
+  const supportsWebP = (() => {
+    const c = document.createElement('canvas');
+    return c.toDataURL('image/webp').startsWith('data:image/webp');
+  })();
+
+  /* Ancho de imágenes según el dispositivo (móvil carga menos píxeles) */
+  const imgW = window.innerWidth <= 900 ? 900 : 1800;
+  const fmt  = supportsWebP ? '&fm=webp' : '';
+
   const images = [
-    'https://i.postimg.cc/15mJzKzx/fondo1.png',
-    'https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=1800&auto=format&fit=crop&q=75',
-    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1800&auto=format&fit=crop&q=75',
-    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1800&auto=format&fit=crop&q=75',
+    /* fondo1 — postimg no soporta transformaciones; se deja como PNG
+       Para reducir su peso, conviértelo a WebP en tu servidor y cambia la URL */
+    'https://i.postimg.cc/FH56WxC8/fondo1.webp',
+    `https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=${imgW}&auto=format&fit=crop&q=72${fmt}`,
+    `https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=${imgW}&auto=format&fit=crop&q=72${fmt}`,
+    `https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=${imgW}&auto=format&fit=crop&q=72${fmt}`,
   ];
 
   /* Tinte de color que se aplica sobre el fondo según la sección activa
@@ -227,10 +239,17 @@ document.addEventListener('click', e => {
   mqMobile.addEventListener('change', applyMotionConfig);
 
   // Crea una .cinema-layer por imagen
+  // La primera capa se carga de inmediato; las demás solo cuando el usuario hace scroll
   const layers = images.map((src, i) => {
     const div = document.createElement('div');
     div.className = 'cinema-layer' + (i === 0 ? ' active' : '');
-    div.style.backgroundImage = `url('${src}')`;
+    if (i === 0) {
+      // Carga inmediata: es visible en el first paint
+      div.style.backgroundImage = `url('${src}')`;
+    } else {
+      // Carga diferida: se inyecta la primera vez que setLayer() la activa
+      div.dataset.lazySrc = src;
+    }
     cBg.appendChild(div);
     return div;
   });
@@ -264,7 +283,13 @@ document.addEventListener('click', e => {
     prev.classList.remove('active');
     prev.classList.add('previous'); // CSS transiciona opacity a 0
     current = idx;
-    layers[current].classList.add('active'); // CSS transiciona opacity a 1
+    const next = layers[current];
+    // Carga diferida: inyecta el fondo la primera vez que se activa la capa
+    if (next.dataset.lazySrc) {
+      next.style.backgroundImage = `url('${next.dataset.lazySrc}')`;
+      delete next.dataset.lazySrc;
+    }
+    next.classList.add('active'); // CSS transiciona opacity a 1
     if (tintEl) tintEl.style.background = tints[idx] || 'transparent';
     // Limpia la clase .previous cuando termina la transición
     const cleanup = () => prev.classList.remove('previous');

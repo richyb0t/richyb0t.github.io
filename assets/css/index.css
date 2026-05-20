@@ -276,18 +276,14 @@ body.loaded { opacity: 1; }
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 6vw;
   position: relative;
-  overflow: hidden;
+  /* Sin overflow:hidden → el #cinema-bg global se ve a través del hero
+     igual que en las secciones ABOUT / PROJECTS / CONTACT */
 }
 
-/* ── Imagen de fondo con parallax (JS la mueve cada frame) ── */
-.hero-parallax-bg {
-  position: absolute; inset: -20%;
-  background-size: cover; background-position: center;
-  
-  z-index: 0;
-  will-change: transform, background-position;
-  pointer-events: none;
-}
+/* ── hero-parallax-bg — desactivado: el #cinema-bg global (position:fixed, z-index:-2)
+   ya es visible a través del hero igual que en ABOUT / PROJECTS / CONTACT.
+   Se oculta para no pintar una capa encima del fondo cinematográfico global. ── */
+.hero-parallax-bg { display: none; }
 
 /* ── Líneas de escaneo (efecto CRT) ── */
 .hero::before {
@@ -300,6 +296,7 @@ body.loaded { opacity: 1; }
 }
 /* Fade suave en la parte inferior del hero */
 .hero::after {
+  display: none;
   content: '';
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -569,6 +566,7 @@ body.loaded { opacity: 1; }
 
 /* Máscara de transición superior */
 #about::before {
+  display: none;
   content: '';
   position: absolute;
   top: 0;

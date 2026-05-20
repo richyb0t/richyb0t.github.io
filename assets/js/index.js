@@ -296,10 +296,7 @@ document.addEventListener('click', e => {
       layers[i].style.transform = `translateY(${ty.toFixed(1)}px) scale(1.26)`;
     }
 
-    // El heroBg del hero usa scroll raw (solo visible en el viewport del hero)
-    if (heroBg) {
-      heroBg.style.transform = `translateY(${sy * heroDepth}px) scale(1.32)`;
-    }
+    // heroBg local ya no existe — el #cinema-bg global cubre también el hero
 
     /* Desvanece el hero-left al hacer scroll
        hp va de 0 a 1 durante el primer 60% de la altura del hero */
@@ -327,20 +324,17 @@ document.addEventListener('click', e => {
   }, { passive: true });
 
   /* Parallax de mouse en el hero (solo escritorio)
-     Mueve el background-position del heroBg según el cursor — barato, no causa layout */
-  if (hero && heroBg && !isMobile) {
+     heroBg local eliminado — el #cinema-bg global cubre también el hero.
+     Solo se mueve el heroLeft según el cursor. */
+  if (hero && !isMobile) {
     let rafMouse = 0;
     hero.addEventListener('mousemove', e => {
-      if (rafMouse) return; // throttle: máximo 1 RAF por frame
+      if (rafMouse) return;
       rafMouse = requestAnimationFrame(() => {
         rafMouse = 0;
         const rect = hero.getBoundingClientRect();
-        // mx/my van de -1 a 1 según la posición del mouse en el hero
         const mx = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
         const my = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
-        heroBg.style.backgroundPosition = `${50 + mx * 2.6}% ${50 + my * 2}%`;
-
-        // heroLeft también sigue el mouse, con menos intensidad en la zona derecha
         if (heroLeft) {
           const strength = (e.clientX - rect.left) < rect.width * 0.6 ? 1 : 0.4;
           hlMouseX = (mx / 2) * 10 * strength;
@@ -350,12 +344,9 @@ document.addEventListener('click', e => {
       });
     }, { passive: true });
 
-    // Al salir del hero, todo vuelve al centro con una transición spring
     hero.addEventListener('mouseleave', () => {
-      heroBg.style.backgroundPosition = '50% 50%';
       if (heroLeft) {
         hlMouseX = 0; hlMouseY = 0;
-        // Transición temporal para el regreso suave; se elimina al terminar
         heroLeft.style.transition = 'transform 0.7s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s';
         heroLeft.style.transform  = `translate(0px, ${hlScrollTy}px)`;
         heroLeft.addEventListener('transitionend', () => { heroLeft.style.transition = ''; }, { once: true });

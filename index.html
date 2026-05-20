@@ -4,15 +4,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <!-- Precarga la primera imagen del parallax (es la que aparece en el first paint) -->
+  <link rel="preload" as="image" href="https://i.postimg.cc/15mJzKzx/fondo1.png" fetchpriority="low">
+
   <title>Ricardo Hernández Castro</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- Preconnect a orígenes externos críticos (reduce latencia DNS+TCP+TLS) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+  <!-- Fuentes con display=swap para evitar FOIT y no bloquear render -->
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap"
-    rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cinzel:wght@400;600;700&display=swap"
+    rel="stylesheet"
+    media="print" onload="this.media='all'">
+  <!-- Fallback sin JS -->
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+  </noscript>
+
+  <!-- CSS crítico propio (sin bloquear; es local así que se sirve rápido) -->
   <link rel="stylesheet" href="assets/css/index.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome diferido: no es crítico para el first paint -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+
+  <!-- Devicons diferido: solo se usa en la sección About, no en el hero -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
+
+  <!-- EmailJS cargado de forma diferida (no necesario en el first paint) -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js" defer></script>
 </head>
 
 <body>
@@ -70,7 +94,7 @@
 
     <div class="hero-right">
       <div class="hero-avatar-wrap">
-        <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="hero-avatar">
+        <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="hero-avatar" width="320" height="320" fetchpriority="high">
         <div class="hero-avatar-ring" aria-hidden="true"></div>
       </div>
     </div>
@@ -87,7 +111,7 @@
       <div class="about-layout">
         <div class="about-main">
           <div class="about-identity reveal">
-            <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="about-photo">
+            <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="about-photo" width="80" height="80" loading="lazy" decoding="async">
             <div>
               <p class="about-greeting">hey, soy</p>
               <h2 class="about-name">Ricardo.</h2>
@@ -269,7 +293,7 @@
   <!-- Toast -->
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
-  <script src="assets/js/index.js"></script>
+  <script src="assets/js/index.js" defer></script>
 </body>
 
 </html>

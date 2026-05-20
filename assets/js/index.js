@@ -392,6 +392,7 @@ document.addEventListener('click', e => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   let rafA = 0;
+  aboutCard.addEventListener('mouseenter', () => { aboutCard.classList.add('tilt-active'); });
   aboutCard.addEventListener('mousemove', e => {
     if (rafA) return; // throttle RAF
     rafA = requestAnimationFrame(() => {
@@ -410,6 +411,7 @@ document.addEventListener('click', e => {
 
   // Al salir, resetea todo al estado original
   aboutCard.addEventListener('mouseleave', () => {
+    aboutCard.classList.remove('tilt-active');
     if (rafA) { cancelAnimationFrame(rafA); rafA = 0; }
     aboutCard.style.transform = '';
     aboutCard.style.setProperty('--about-glow-x', '50%');

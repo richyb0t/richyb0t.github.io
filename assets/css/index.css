@@ -1050,3 +1050,36 @@ body.loaded { opacity: 1; }
   .ticker-digit { transition: none; }
   .magnetic-btn { transition: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   16. OPTIMIZACIONES DE RENDIMIENTO (agregadas para Lighthouse)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* content-visibility: auto — el browser omite el layout/paint de secciones
+   fuera del viewport. Solo aplica a secciones que NO son el hero. */
+#about, #projects, #contact {
+  content-visibility: auto;
+  /* contain-intrinsic-size evita el salto de scroll al revelar la sección.
+     Ajusta la altura aproximada de cada sección si es muy diferente. */
+  contain-intrinsic-size: 0 600px;
+}
+
+/* Evita layout shift en imágenes: el navegador reserva el espacio antes de cargar */
+img {
+  aspect-ratio: attr(width) / attr(height);
+}
+
+/* Imagen del hero: tamaño estable desde antes de cargar */
+.hero-avatar {
+  width: 220px;
+  height: 220px;
+  min-width: 220px;
+  min-height: 220px;
+}
+
+/* will-change solo mientras se anima el about-tilt; JS lo agrega y quita */
+.about-main.tilt-active { will-change: transform; }
+
+/* Mejora de caché de fuentes locales con font-display en @font-face si
+   se sirven desde el propio servidor; aquí se complementa el display=swap
+   que se envía desde Google Fonts en el parámetro de URL. */

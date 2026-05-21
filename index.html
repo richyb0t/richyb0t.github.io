@@ -31,8 +31,8 @@
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
 
-  <!-- Devicons diferido: solo se usa en la sección About, no en el hero -->
-  <link rel="preload" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <!-- Devicons: se carga de forma lazy vía JS cuando la sección About entra en viewport
+       (la fuente TTF pesa 777 KiB — no bloquear el first paint con ella) -->
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
 
   <!-- EmailJS cargado de forma diferida (no necesario en el first paint) -->

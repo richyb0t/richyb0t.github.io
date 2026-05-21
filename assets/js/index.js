@@ -54,29 +54,41 @@ window.addEventListener('scroll', () => { _scrollY = window.scrollY; }, { passiv
 /* ═══════════════════════════════════════════════════════════════════
    3. SCROLL BAR — Barra de progreso de lectura (línea 1px en la cima)
    Usa scaleX en lugar de width para evitar reflow en cada frame.
+   En móvil se actualiza con throttle más agresivo (cada 200ms).
    ═══════════════════════════════════════════════════════════════════ */
 (function () {
   const bar = document.getElementById('scrollBar');
   if (!bar) return;
 
-  // scrollMax se recalcula en resize porque el documento puede crecer
   let scrollMax = document.documentElement.scrollHeight - window.innerHeight;
   window.addEventListener('resize', () => {
     scrollMax = document.documentElement.scrollHeight - window.innerHeight;
   }, { passive: true });
 
-  // ticking evita encolar múltiples RAFs por evento scroll
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        // scaleX va de 0 (inicio) a 1 (final de página)
-        bar.style.transform = `scaleX(${_scrollY / (scrollMax || 1)})`;
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
+  const isMob = window.matchMedia('(max-width: 900px)').matches;
+
+  if (isMob) {
+    // Móvil: throttle a 200ms, sin RAF para no sumar frames al hilo principal
+    let lastUpdate = 0;
+    window.addEventListener('scroll', () => {
+      const now = Date.now();
+      if (now - lastUpdate < 200) return;
+      lastUpdate = now;
+      bar.style.transform = `scaleX(${_scrollY / (scrollMax || 1)})`;
+    }, { passive: true });
+  } else {
+    // Escritorio: RAF normal
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          bar.style.transform = `scaleX(${_scrollY / (scrollMax || 1)})`;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
 })();
 
 
@@ -309,30 +321,24 @@ document.addEventListener('click', e => {
     const sy       = smoothY;
     const maxH     = document.documentElement.scrollHeight - window.innerHeight;
     const progress = sy / (maxH || 1); // 0 = inicio, 1 = final de página
-    // Oculta el cinema-bg mientras estamos en el hero
     const vh       = window.innerHeight;
 
-    /* Mueve las capas de fondo
-       translateY normalizado al viewport para que no salgan del inset -15%
-       Cada capa tiene un rango diferente -> efecto de profundidad (parallax) */
-    for (let i = 0; i < layers.length; i++) {
-      const range = vh * (0.08 + i * 0.03);       // 8vh, 11vh, 14vh por capa
-      const ty    = (progress - 0.5) * range * 2; // centrado: negativo arriba, positivo abajo
-      layers[i].style.transform = `translateY(${ty.toFixed(1)}px) scale(1.26)`;
-    }
+    /* En escritorio: mueve capas de fondo (parallax) y desvanece el heroLeft.
+       En móvil: se omite el transform por frame para reducir Style & Layout. */
+    if (!isMobile) {
+      for (let i = 0; i < layers.length; i++) {
+        const range = vh * (0.08 + i * 0.03);
+        const ty    = (progress - 0.5) * range * 2;
+        layers[i].style.transform = `translateY(${ty.toFixed(1)}px) scale(1.26)`;
+      }
 
-    // heroBg local ya no existe — el #cinema-bg global cubre también el hero
-
-    /* Desvanece el hero-left al hacer scroll
-       hp va de 0 a 1 durante el primer 60% de la altura del hero */
-    if (heroLeft) {
-      const hp = Math.min(sy / (heroH * 0.6 || 1), 1);
-      hlScrollTy = sy * 0.08;                  // sube levemente con el scroll
-      hlScrollOp = Math.max(0, 1 - hp * 1.6); // se desvanece al bajar
-
-      // Un solo write de transform combina scroll + mouse
-      heroLeft.style.transform = `translate(${hlMouseX}px, ${hlScrollTy + hlMouseY}px)`;
-      if (heroLeftReady) heroLeft.style.opacity = hlScrollOp.toString();
+      if (heroLeft) {
+        const hp = Math.min(sy / (heroH * 0.6 || 1), 1);
+        hlScrollTy = sy * 0.08;
+        hlScrollOp = Math.max(0, 1 - hp * 1.6);
+        heroLeft.style.transform = `translate(${hlMouseX}px, ${hlScrollTy + hlMouseY}px)`;
+        if (heroLeftReady) heroLeft.style.opacity = hlScrollOp.toString();
+      }
     }
 
     // Cambia la imagen de fondo según en qué tercio de la página estamos
@@ -550,9 +556,12 @@ function downloadCV() {
 
   /* ── 14a. Reveal letra por letra del nombre ──
      Divide .hero-name en spans .hero-char
-     CSS anima cada span con charIn + delay calculado por --ci (índice) */
+     CSS anima cada span con charIn + delay calculado por --ci (índice)
+     En móvil se salta el wrap de chars para ahorrar Script Evaluation. */
   const heroName = document.querySelector('.hero-name');
-  if (heroName) {
+  const isMobileAnim = window.matchMedia('(max-width: 900px)').matches;
+
+  if (heroName && !isMobileAnim) {
     function wrapChars(node) {
       if (node.nodeType === Node.TEXT_NODE) {
         const frag = document.createDocumentFragment();
@@ -565,18 +574,13 @@ function downloadCV() {
         }
         node.parentNode.replaceChild(frag, node);
       } else if (node.nodeName === 'EM') {
-        // Entra recursivamente en el <em> (Hernández en cursiva)
         Array.from(node.childNodes).forEach(wrapChars);
       }
     }
     Array.from(heroName.childNodes).forEach(wrapChars);
-    // --ci es el índice de cada letra; CSS lo usa para calcular animation-delay
     heroName.querySelectorAll('.hero-char').forEach((el, i) => el.style.setProperty('--ci', i));
 
-    /* ── 14b. Spring hover en el nombre (estilo Text_03 de 21st.dev) ──
-       Al hacer hover sobre .hero-name cada letra salta con física de resorte.
-       Ecuación: F = -K*x - D*v  (resorte amortiguado)
-       K = rigidez (300), D = amortiguación (15) */
+    /* ── 14b. Spring hover en el nombre — solo escritorio ── */
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 
       function springTo(span, ty, ts_, delay) {
@@ -665,10 +669,14 @@ function downloadCV() {
   /* ── 14e. Partículas flotantes en canvas ──
      28 puntos que suben lentamente con opacidad pulsante.
      El loop se pausa cuando el hero sale del viewport (IntersectionObserver)
-     y cuando la pestaña está oculta (visibilitychange) */
+     y cuando la pestaña está oculta (visibilitychange)
+     En móvil se omite para reducir el trabajo del hilo principal. */
   const heroLeft = document.querySelector('.hero-left');
   const hero     = document.querySelector('.hero');
   if (!hero || !heroLeft) return;
+
+  // En móvil no hay partículas: ahorran ~300ms de Script Evaluation en dispositivos lentos
+  if (window.matchMedia('(max-width: 900px)').matches) return;
 
   // Crea el canvas y lo inserta dentro del hero
   const canvas = document.createElement('canvas');
@@ -953,4 +961,36 @@ window.addEventListener('load', () => {
   }
 
   document.querySelectorAll('.btn-cv, .btn-send, [data-magnetic]').forEach(makeMagnetic);
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   21. LAZY DEVICONS — Carga la fuente TTF de devicon (777 KiB) solo
+   cuando la sección #about entra en el viewport por primera vez.
+   Esto evita que el navegador la descargue durante el first paint,
+   reduciendo el LCP y el TBT en móvil de forma significativa.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  const about = document.getElementById('about');
+  if (!about) return;
+
+  let loaded = false;
+  const obs = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting || loaded) return;
+    loaded = true;
+    obs.disconnect();
+
+    // Inyecta el <link> de devicons en el <head> en este momento
+    const link = document.createElement('link');
+    link.rel  = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css';
+    document.head.appendChild(link);
+  }, {
+    // Empieza a cargar con ~300px de anticipación para que los iconos
+    // estén listos cuando el usuario llegue a la sección
+    rootMargin: '300px 0px 0px 0px',
+    threshold: 0
+  });
+
+  obs.observe(about);
 })();

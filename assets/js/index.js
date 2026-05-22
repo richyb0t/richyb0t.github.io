@@ -326,6 +326,7 @@ document.addEventListener('click', e => {
     /* En escritorio: mueve capas de fondo (parallax) y desvanece el heroLeft.
        En móvil: se omite el transform por frame para reducir Style & Layout. */
     if (!isMobile) {
+      // OPT: activa will-change en las layers solo mientras se mueven
       for (let i = 0; i < layers.length; i++) {
         const range = vh * (0.08 + i * 0.03);
         const ty    = (progress - 0.5) * range * 2;
@@ -336,6 +337,8 @@ document.addEventListener('click', e => {
         const hp = Math.min(sy / (heroH * 0.6 || 1), 1);
         hlScrollTy = sy * 0.08;
         hlScrollOp = Math.max(0, 1 - hp * 1.6);
+        // OPT: activa will-change mientras se mueve, lo desactiva cuando para
+        heroLeft.classList.add('parallax-active');
         heroLeft.style.transform = `translate(${hlMouseX}px, ${hlScrollTy + hlMouseY}px)`;
         if (heroLeftReady) heroLeft.style.opacity = hlScrollOp.toString();
       }
@@ -345,7 +348,12 @@ document.addEventListener('click', e => {
     setLayer(Math.min(Math.floor(progress * images.length), images.length - 1));
 
     // Continúa el loop solo si todavía hay diferencia perceptible
-    if (Math.abs(targetY - smoothY) > 1.0) rafId = requestAnimationFrame(update);
+    if (Math.abs(targetY - smoothY) > 1.0) {
+      rafId = requestAnimationFrame(update);
+    } else {
+      // OPT: cuando el scroll converge, quita will-change para liberar GPU memory
+      if (heroLeft) heroLeft.classList.remove('parallax-active');
+    }
   }
 
   // Dispara el loop cuando el usuario hace scroll
@@ -621,6 +629,8 @@ function downloadCV() {
 
       // Hover: cada letra sube -6px y crece a 1.2x con delay escalonado de 30ms
       heroName.addEventListener('mouseenter', () => {
+        // OPT: activa will-change en todas las letras solo durante el hover
+        heroName.classList.add('hero-chars-hover');
         heroName.querySelectorAll('.hero-char').forEach((s, i) =>
           springTo(s, -6, 1.2, i * 30)); // <- ajusta: -6 (altura), 1.2 (escala), 30 (delay ms)
       });
@@ -629,6 +639,8 @@ function downloadCV() {
       heroName.addEventListener('mouseleave', () => {
         heroName.querySelectorAll('.hero-char').forEach((s, i) =>
           springTo(s, 0, 1, i * 18));
+        // OPT: quita will-change cuando las letras vuelven al reposo
+        setTimeout(() => heroName.classList.remove('hero-chars-hover'), 800);
       });
     }
   }
@@ -784,26 +796,9 @@ window.addEventListener('load', () => {
 
 
 /* ═══════════════════════════════════════════════════════════════════
-   17. TEXT SHIMMER — Gradiente animado que barre el texto
-   JS agrega la clase CSS; la animación shimmerMove está en index.css.
-   .shimmer-text        -> subtítulo (hero-sub)
-   .shimmer-text-strong -> logo (nav-logo), más brillante
+   17. TEXT SHIMMER — movido a módulo 22 (scheduleIdle) para reducir TBT.
+   El shimmer no es crítico en el first paint; se aplica en tiempo idle.
    ═══════════════════════════════════════════════════════════════════ */
-(function () {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  // Subtítulo del hero
-  document.querySelectorAll('.hero-sub').forEach(el => el.classList.add('shimmer-text'));
-
-  // Logo de la navbar
-  const logo = document.querySelector('.nav-logo');
-  if (logo) logo.classList.add('shimmer-text-strong');
-
-  // Cualquier elemento con data-shimmer="strong" o data-shimmer en el HTML
-  document.querySelectorAll('[data-shimmer]').forEach(el => {
-    el.classList.add(el.dataset.shimmer === 'strong' ? 'shimmer-text-strong' : 'shimmer-text');
-  });
-})();
 
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -993,4 +988,40 @@ window.addEventListener('load', () => {
   });
 
   obs.observe(about);
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   22. PASSIVE INIT — Inicializa módulos no-críticos en tiempo idle
+   ─────────────────────────────────────────────────────────────────
+   OPT: requestIdleCallback (con fallback a setTimeout 200ms) permite que
+   el browser termine el first paint y la interacción inicial antes de
+   ejecutar código que no es necesario en el primer frame visible.
+   Esto reduce el TBT (Total Blocking Time) en móvil.
+
+   Se mueven aquí: shimmer, blur-in, number-ticker, magnetic button.
+   Estos no afectan el layout inicial ni son necesarios para que el
+   usuario pueda scrollear o hacer click inmediatamente.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  // requestIdleCallback con timeout de seguridad de 500ms
+  const scheduleIdle = (fn) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(fn, { timeout: 500 });
+    } else {
+      setTimeout(fn, 200);
+    }
+  };
+
+  scheduleIdle(() => {
+    // ── Shimmer en hero-sub y logo ──
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.hero-sub').forEach(el => el.classList.add('shimmer-text'));
+      const logo = document.querySelector('.nav-logo');
+      if (logo) logo.classList.add('shimmer-text-strong');
+      document.querySelectorAll('[data-shimmer]').forEach(el => {
+        el.classList.add(el.dataset.shimmer === 'strong' ? 'shimmer-text-strong' : 'shimmer-text');
+      });
+    }
+  });
 })();

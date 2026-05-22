@@ -6,15 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080808">
   <!-- Precarga la primera imagen del parallax (es la que aparece en el first paint) -->
-  <link rel="preload" as="image" href="https://i.postimg.cc/15mJzKzx/fondo1.png" fetchpriority="low">
+  <!-- OPT: fetchpriority="high" para que el browser la descargue antes que otros recursos -->
+  <link rel="preload" as="image" href="https://i.postimg.cc/FH56WxC8/fondo1.webp" fetchpriority="high">
 
   <title>Ricardo Hernández Castro</title>
   <!-- Preconnect a orígenes externos críticos (reduce latencia DNS+TCP+TLS) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <!-- OPT: preconnect a postimg para que la primera imagen de fondo cargue más rápido -->
+  <link rel="preconnect" href="https://i.postimg.cc" crossorigin>
 
-  <!-- Fuentes con display=swap para evitar FOIT y no bloquear render -->
+  <!-- OPT: Fuentes — display=swap cambiado a display=optional en el subset crítico.
+       "optional" significa que el browser usa la fuente del sistema si la web font
+       no está lista en el primer render, eliminando el FOIT y el reflow de fuentes.
+       Cinzel y DM Mono son las más críticas (navbar + hero); las demás igual. -->
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cinzel:wght@400;600;700&display=optional"
     rel="stylesheet"
@@ -27,13 +33,18 @@
   <!-- CSS crítico propio (sin bloquear; es local así que se sirve rápido) -->
   <link rel="stylesheet" href="assets/css/index.css">
 
-  <!-- FontAwesome diferido: no es crítico para el first paint -->
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <!-- OPT: FontAwesome con fetchpriority="high" — los iconos del hero (avatar, nav)
+       son visibles en el first paint; priorizar su descarga reduce el CLS de iconos -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
 
   <!-- Devicons: se carga de forma lazy vía JS cuando la sección About entra en viewport
        (la fuente TTF pesa 777 KiB — no bloquear el first paint con ella) -->
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
+
+  <!-- OPT: preload del avatar del hero — es el LCP candidate en móvil cuando
+       el cinema-bg no carga rápido. width/height ayudan al browser a dimensionarlo. -->
+  <link rel="preload" as="image" href="assets/img/Ricardo.webp" fetchpriority="high">
 
   <!-- EmailJS cargado de forma diferida (no necesario en el first paint) -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js" defer></script>
@@ -94,7 +105,8 @@
 
     <div class="hero-right">
       <div class="hero-avatar-wrap">
-        <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="hero-avatar" width="320" height="320" fetchpriority="high">
+        <!-- OPT: decoding="async" para que el decode de la imagen no bloquee el hilo principal -->
+        <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="hero-avatar" width="320" height="320" fetchpriority="high" decoding="async">
         <div class="hero-avatar-ring" aria-hidden="true"></div>
       </div>
     </div>

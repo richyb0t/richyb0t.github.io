@@ -1025,3 +1025,116 @@ window.addEventListener('load', () => {
     }
   });
 })();
+
+/* ═══════════════════════════════════════════════════════════════════
+   23. LIBERAR WILL-CHANGE DESPUÉS DE ANIMACIONES INICIALES
+   ─────────────────────────────────────────────────────────────────
+   OPT: will-change: opacity/transform en .hero-right se aplica antes
+   de la animación CSS (@keyframes heroIn). Una vez que termina la 
+   animación, quitar will-change libera la capa de compositor GPU.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  const heroRight = document.querySelector('.hero-right');
+  if (!heroRight) return;
+  // La animación heroIn dura 1s + 0.28s delay = ~1.3s. Liberamos a los 1.5s.
+  setTimeout(() => heroRight.classList.add('anim-done'), 1500);
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   24. PRELOAD DE IMÁGENES DE FONDO RESTANTES EN IDLE TIME
+   ─────────────────────────────────────────────────────────────────
+   La primera imagen de fondo ya está preloaded en el <head>.
+   Las demás se prefetchean en tiempo idle para que estén en caché
+   cuando el usuario haga scroll. No bloquea el first paint.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  // Solo en conexiones no metered (evita gastos de datos en móvil con datos limitados)
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (conn && (conn.saveData || conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g')) return;
+
+  const isMob = window.matchMedia('(max-width: 900px)').matches;
+  const imgW  = isMob ? 900 : 1800;
+  const supportsWebP = (() => {
+    try {
+      return document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp');
+    } catch { return false; }
+  })();
+  const fmt = supportsWebP ? '&fm=webp' : '';
+
+  const bgImages = [
+    `https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=${imgW}&auto=format&fit=crop&q=72${fmt}`,
+    `https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=${imgW}&auto=format&fit=crop&q=72${fmt}`,
+    `https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=${imgW}&auto=format&fit=crop&q=72${fmt}`,
+  ];
+
+  const scheduleIdle = (fn) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(fn, { timeout: 3000 });
+    } else {
+      setTimeout(fn, 2000);
+    }
+  };
+
+  // Prefetch una imagen a la vez para no saturar la red
+  function prefetchOne(idx) {
+    if (idx >= bgImages.length) return;
+    scheduleIdle(() => {
+      const img = new Image();
+      img.onload = () => prefetchOne(idx + 1); // siguiente solo cuando esta cargó
+      img.src = bgImages[idx];
+    });
+  }
+
+  // Empieza a prefetchear después de que el load event termine
+  window.addEventListener('load', () => prefetchOne(0), { once: true, passive: true });
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   25. ACTIVE NAV LINKS — Resalta el link de navbar según sección visible
+   ─────────────────────────────────────────────────────────────────
+   Usa IntersectionObserver en lugar de scroll + getBoundingClientRect
+   para evitar layout thrashing. Beneficia al SEO (señal de UX).
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  if (!sections.length || !navLinks.length) return;
+
+  const linkMap = {};
+  navLinks.forEach(a => { linkMap[a.getAttribute('href').slice(1)] = a; });
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const link = linkMap[entry.target.id];
+      if (link) link.classList.toggle('active', entry.isIntersecting);
+    });
+  }, {
+    rootMargin: '-40% 0px -55% 0px', // activa cuando la sección ocupa el centro del viewport
+    threshold: 0
+  });
+
+  sections.forEach(s => obs.observe(s));
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   26. ARIA DEL DRAWER MÓVIL — Sincroniza aria-hidden con el estado del drawer
+   ─────────────────────────────────────────────────────────────────
+   El aria-hidden en el drawer y overlay ya están en el HTML.
+   Este módulo los mantiene sincronizados al abrir/cerrar.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  const drawer  = document.getElementById('navDrawer');
+  const overlay = document.getElementById('navOverlay');
+  if (!drawer) return;
+
+  // MutationObserver en la clase .open del drawer
+  const mo = new MutationObserver(() => {
+    const isOpen = drawer.classList.contains('open');
+    drawer.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    if (overlay) overlay.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+  });
+  mo.observe(drawer, { attributes: true, attributeFilter: ['class'] });
+})();

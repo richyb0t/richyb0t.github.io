@@ -1209,3 +1209,153 @@ img {
     will-change: auto;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   18. OPTIMIZACIONES ADICIONALES (Lighthouse 90+)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/*
+  FONT METRIC OVERRIDE — Reduce el CLS (Cumulative Layout Shift) causado
+  por el swap de fuentes. Ajusta el fallback de sistema para que ocupe
+  casi el mismo espacio que Cinzel y DM Mono antes de que carguen.
+  
+  Cinzel ≈ 104% advance-width, ascent alto, descend bajo.
+  DM Mono ≈ monoespaciada, similar a Courier New.
+*/
+@font-face {
+  font-family: 'Cinzel-fallback';
+  src: local('Georgia'), local('Times New Roman');
+  size-adjust: 112%;
+  ascent-override: 80%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'DMMono-fallback';
+  src: local('Courier New'), local('Courier');
+  size-adjust: 95%;
+  ascent-override: 85%;
+  descent-override: 21%;
+  line-gap-override: 0%;
+}
+
+/*
+  Actualiza las variables --mono y --serif para usar los fallbacks métricamente
+  ajustados. Esto reduce el layout shift al cargar las fuentes reales.
+*/
+:root {
+  --mono:    'DM Mono', 'DMMono-fallback', 'Courier New', monospace;
+  --display: 'Syne', sans-serif;
+  --serif:   'Instrument Serif', Georgia, serif;
+}
+
+/*
+  touch-action: pan-y — permite al browser manejar el scroll vertical
+  directamente en el compositor sin pasar por el hilo principal.
+  Aplica a la mayoría de los elementos interactivos para reducir TBT en móvil.
+*/
+body { touch-action: pan-y; }
+.hero-avatar-wrap,
+.project-card,
+.social-row,
+.tech-badge { touch-action: manipulation; }
+
+/*
+  contain: layout style — limita el alcance del layout recalculation.
+  Las secciones off-screen no causan reflow al cambiar las on-screen.
+  (content-visibility:auto ya está en sección 16; este contain lo refuerza)
+*/
+.section-inner {
+  contain: layout style;
+}
+
+/*
+  Fuerza GPU layer en animaciones de entrada para que no bloqueen el main thread.
+  Solo activo durante la animación; JS quita will-change cuando converge.
+*/
+.hero-right {
+  will-change: opacity, transform;
+}
+/* Quitar will-change después de la animación para liberar GPU memory */
+.hero-right.anim-done {
+  will-change: auto;
+}
+
+/*
+  Mejora de rendimiento del scrollbar — evita recalcular layout en resize.
+*/
+#scrollBar {
+  will-change: transform;
+}
+
+/*
+  Optimización de imágenes: object-fit para evitar reflow al cargar.
+  height:auto en imágenes lazy evita CLS cuando el browser no conoce el ratio.
+*/
+img[loading="lazy"] {
+  height: auto;
+}
+
+/*
+  Formulario: optimiza el color-scheme para que el browser use inputs nativos
+  oscuros (evita parpadeo blanco de inputs en dark mode).
+*/
+.contact-form input,
+.contact-form textarea {
+  color-scheme: dark;
+}
+
+/*
+  Contacto — items clickeables como links (teléfono/email ya son <a> en HTML).
+*/
+.contact-item a {
+  color: inherit;
+  text-decoration: none;
+  transition: color .22s;
+}
+.contact-item a:hover { color: #e8e8e4; }
+
+/*
+  Mejora de accesibilidad: focus-visible para usuarios de teclado.
+  Solo visible con teclado, invisible con mouse (reduce clutter visual).
+*/
+:focus-visible {
+  outline: 2px solid rgba(212, 212, 200, 0.6);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/*
+  Botones y links táctiles: min 44×44px de área táctil (WCAG 2.5.5).
+  En móvil, el padding los hace más fáciles de tocar.
+*/
+@media (max-width: 900px) {
+  .nav-links a,
+  .drawer-link,
+  .hero-nav a,
+  .social-row {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .menu-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+  /* Reduce la cantidad de capas de cinema-layer en móvil para menor GPU usage */
+  .cinema-layer {
+    will-change: auto;
+    transform: none !important;
+  }
+}
+
+/*
+  Optimización del parallax en escritorio: capas de fondo con will-change
+  solo mientras se mueven (JS las activa/desactiva). El CSS base es sin will-change.
+*/
+.cinema-layer {
+  /* will-change lo gestiona JS dinámicamente */
+  contain: strict;
+}

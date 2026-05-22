@@ -5,49 +5,140 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080808">
-  <!-- Precarga la primera imagen del parallax (es la que aparece en el first paint) -->
-  <!-- OPT: fetchpriority="high" para que el browser la descargue antes que otros recursos -->
-  <link rel="preload" as="image" href="https://i.postimg.cc/FH56WxC8/fondo1.webp" fetchpriority="high">
 
-  <title>Ricardo Hernández Castro</title>
-  <!-- Preconnect a orígenes externos críticos (reduce latencia DNS+TCP+TLS) -->
+  <!-- SEO crítico -->
+  <meta name="description" content="Ricardo Hernández Castro — Desarrollador de software especializado en aplicaciones web, sistemas de escritorio y bots para automatización.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://richyb0t.github.io/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ricardo Hernández Castro · Desarrollador de Software">
+  <meta property="og:description" content="Desarrollador de software especializado en aplicaciones web, sistemas de escritorio y bots para automatización.">
+  <meta property="og:image" content="assets/img/Ricardo.webp">
+
+  <title>Ricardo Hernández Castro · Desarrollador de Software</title>
+
+  <!-- DNS prefetch / preconnect — solo orígenes críticos -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <!-- OPT: preconnect a postimg para que la primera imagen de fondo cargue más rápido -->
   <link rel="preconnect" href="https://i.postimg.cc" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
 
-  <!-- OPT: Fuentes — display=swap cambiado a display=optional en el subset crítico.
-       "optional" significa que el browser usa la fuente del sistema si la web font
-       no está lista en el primer render, eliminando el FOIT y el reflow de fuentes.
-       Cinzel y DM Mono son las más críticas (navbar + hero); las demás igual. -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cinzel:wght@400;600;700&display=optional"
-    rel="stylesheet"
-    media="print" onload="this.media='all'">
-  <!-- Fallback sin JS -->
-  <noscript>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cinzel:wght@400;600;700&display=optional" rel="stylesheet">
-  </noscript>
-
-  <!-- CSS crítico propio (sin bloquear; es local así que se sirve rápido) -->
-  <link rel="stylesheet" href="assets/css/index.css">
-
-  <!-- OPT: FontAwesome con fetchpriority="high" — los iconos del hero (avatar, nav)
-       son visibles en el first paint; priorizar su descarga reduce el CLS de iconos -->
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
-
-  <!-- Devicons: se carga de forma lazy vía JS cuando la sección About entra en viewport
-       (la fuente TTF pesa 777 KiB — no bloquear el first paint con ella) -->
-  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
-
-  <!-- OPT: preload del avatar del hero — es el LCP candidate en móvil cuando
-       el cinema-bg no carga rápido. width/height ayudan al browser a dimensionarlo. -->
+  <!-- LCP: primera imagen de fondo -->
+  <link rel="preload" as="image" href="https://i.postimg.cc/FH56WxC8/fondo1.webp" fetchpriority="high">
+  <!-- LCP: avatar del hero -->
   <link rel="preload" as="image" href="assets/img/Ricardo.webp" fetchpriority="high">
 
-  <!-- EmailJS cargado de forma diferida (no necesario en el first paint) -->
+  <!--
+    CRÍTICO: Fuentes con display=swap en lugar de display=optional
+    "optional" en Google Fonts suele causar que Chrome descarte la fuente en 
+    conexiones lentas y muestre el fallback en el FOIT, afectando CLS.
+    "swap" garantiza que siempre se muestre texto (FOUT aceptable para SEO).
+  -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cinzel:wght@400;600;700&display=swap"
+    rel="stylesheet"
+    media="print" onload="this.media='all'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+  </noscript>
+
+  <!-- CSS propio: único recurso de bloqueo de render aceptable (local, rápido) -->
+  <link rel="stylesheet" href="assets/css/index.css">
+
+  <!--
+    FontAwesome: preload + onload para carga no bloqueante.
+    fetchpriority="high" porque los iconos del hero son visibles en el first paint.
+  -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        as="style" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+
+  <!-- Devicons: JS lo inyecta lazy cuando #about entra en viewport -->
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
+
+  <!--
+    EmailJS: defer — no bloquea el parser ni el first paint.
+    Se inicializa en JS después del DOMContentLoaded.
+  -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js" defer></script>
+
+  <!--
+    CSS CRÍTICO INLINE (above-the-fold): evita que el browser espere index.css
+    para pintar el primer frame. Solo los estilos que el usuario ve sin hacer scroll.
+    Se generó extrayendo las reglas usadas por: body, navbar, hero y sus hijos directos.
+  -->
+  <style>
+    /* Reset mínimo necesario para el first paint */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    /* Body invisible hasta que JS agrega .loaded (evita FOUC) */
+    body{font-family:'DM Mono','Courier New',monospace;background:#080808;color:#e8e8e4;
+      line-height:1.7;overflow-x:hidden;font-size:14px;opacity:0;
+      transition:opacity .45s cubic-bezier(.4,0,.2,1)}
+    body.loaded{opacity:1}
+    /* Barra de scroll */
+    .scroll-bar{position:fixed;top:0;left:0;height:1px;width:100%;
+      transform:scaleX(0);transform-origin:left center;
+      background:linear-gradient(90deg,transparent,#d4d4c8,transparent);z-index:9999}
+    /* Fondo cinematográfico */
+    #cinema-bg{position:fixed;inset:0;z-index:-2;background:#080808;overflow:hidden}
+    #cinema-tint{position:fixed;inset:0;z-index:-1;pointer-events:none;
+      transition:background 2s cubic-bezier(.4,0,.2,1)}
+    /* Navbar */
+    .navbar{position:fixed;top:0;width:100%;z-index:1000;background:transparent;
+      transition:background .4s,border-color .4s;border-bottom:1px solid transparent}
+    .navbar.scrolled{background:rgba(8,8,8,.88);backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);border-bottom-color:rgba(255,255,255,.08)}
+    .nav-container{max-width:1100px;margin:auto;padding:1.2rem 6vw;
+      display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;
+      letter-spacing:.28em;text-transform:uppercase;color:#e8e8e4;text-decoration:none}
+    .nav-links{list-style:none;display:flex;gap:2.5rem}
+    .nav-links a{text-decoration:none;color:rgba(220,220,210,.58);font-family:'Cinzel',serif;
+      font-size:.75rem;letter-spacing:.1em;text-transform:lowercase;
+      transition:color .25s;position:relative;padding-bottom:2px}
+    .nav-links a::after{content:'';position:absolute;bottom:-1px;left:0;width:0;height:1px;
+      background:#d4d4c8;transition:width .3s}
+    .nav-links a:hover,.nav-links a.active{color:#e8e8e4}
+    .nav-links a:hover::after,.nav-links a.active::after{width:100%}
+    .menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px;
+      z-index:1001;background:none;border:none}
+    .menu-toggle span{display:block;width:22px;height:1px;background:rgba(220,220,210,.58);
+      border-radius:1px;transition:transform .38s,opacity .38s,background .38s;transform-origin:center}
+    /* Hero */
+    .hero{min-height:100vh;display:flex;align-items:center;justify-content:space-between;
+      padding:0 6vw;position:relative}
+    .hero-parallax-bg{display:none}
+    .hero-left{position:relative;z-index:2;display:flex;flex-direction:column;gap:1.4rem;
+      max-width:400px;animation:heroLeftIn .6s .05s cubic-bezier(.4,0,.2,1) both}
+    @keyframes heroLeftIn{from{opacity:0}to{opacity:1}}
+    .hero-right{position:relative;z-index:2;opacity:0;
+      animation:heroIn 1s .28s cubic-bezier(.4,0,.2,1) forwards}
+    @keyframes heroIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+    .hero-avatar-wrap{position:relative;width:clamp(140px,18vw,240px);height:clamp(140px,18vw,240px)}
+    .hero-avatar{width:100%;height:100%;border-radius:50%;object-fit:cover;
+      border:1px solid rgba(255,255,255,.18);display:block;filter:grayscale(.15);
+      transition:filter .5s;aspect-ratio:1/1}
+    .hero-name{font-family:'Cinzel',serif;letter-spacing:.09em;text-transform:uppercase;
+      font-size:clamp(2rem,3.5vw,3rem);text-shadow:0 2px 10px rgba(0,0,0,.8),0 0 20px rgba(212,212,200,.15);
+      line-height:1;color:#fff;font-weight:400}
+    .hero-name em{font-style:italic;color:rgba(220,220,210,.58)}
+    .hero-sub{font-family:'Cinzel',serif;font-size:.78rem;color:rgba(220,220,210,.58);
+      letter-spacing:.1em;text-transform:lowercase;position:relative;overflow:hidden}
+    @media(max-width:900px){
+      .hero{flex-direction:column;justify-content:center;align-items:center;
+        gap:2.2rem;padding:7rem 6vw 5rem;text-align:center}
+      .hero-right{order:-1}
+      .hero-left{max-width:100%;align-items:center}
+      .hero-avatar-wrap{width:clamp(140px,42vw,200px);height:clamp(140px,42vw,200px)}
+      .nav-links{display:none}
+      .menu-toggle{display:flex}
+    }
+  </style>
 </head>
 
 <body>
@@ -55,7 +146,7 @@
   <!-- Scroll progress -->
   <div class="scroll-bar" id="scrollBar"></div>
 
-  <!-- Noise -->
+  <!-- Noise: solo desktop, se oculta en móvil vía CSS -->
   <div class="noise-overlay" aria-hidden="true"></div>
 
   <!-- Parallax cinema background -->
@@ -66,64 +157,80 @@
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="#home" class="nav-logo">RHC</a>
-      <ul class="nav-links">
+      <ul class="nav-links" role="list">
         <li><a href="#about">acerca</a></li>
         <li><a href="#projects">proyectos</a></li>
         <li><a href="#contact">contacto</a></li>
       </ul>
-      <!-- Hamburger -->
-      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
-        <span></span><span></span><span></span>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false"
+              aria-controls="navDrawer">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
       </button>
     </div>
   </nav>
 
   <!-- Mobile drawer -->
-  <div class="nav-overlay" id="navOverlay"></div>
-  <nav class="nav-drawer" id="navDrawer" aria-label="Menú móvil">
+  <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+  <nav class="nav-drawer" id="navDrawer" aria-label="Menú móvil" aria-hidden="true">
     <a href="#about" class="drawer-link">acerca</a>
     <a href="#projects" class="drawer-link">proyectos</a>
     <a href="#contact" class="drawer-link">contacto</a>
   </nav>
 
   <!-- ─── HERO ─── -->
-  <section id="home" class="hero">
+  <section id="home" class="hero" aria-label="Portada">
     <div class="hero-parallax-bg" aria-hidden="true"></div>
 
     <div class="hero-left">
       <h1 class="hero-name">Ricardo<br><em>Hernández</em></h1>
       <p class="hero-sub">programador · creador de contenido</p>
 
-      <nav class="hero-nav" aria-label="Secciones">
-        <a href="#about"><span class="nav-marker">◆</span> Acerca de mí</a>
-        <a href="#projects"><span class="nav-marker">◆</span> Proyectos</a>
-        <a href="#contact"><span class="nav-marker">◆</span> Contacto</a>
+      <nav class="hero-nav" aria-label="Secciones principales">
+        <a href="#about"><span class="nav-marker" aria-hidden="true">◆</span> Acerca de mí</a>
+        <a href="#projects"><span class="nav-marker" aria-hidden="true">◆</span> Proyectos</a>
+        <a href="#contact"><span class="nav-marker" aria-hidden="true">◆</span> Contacto</a>
       </nav>
 
-      <p class="hero-scroll-hint">scroll para explorar</p>
+      <p class="hero-scroll-hint" aria-hidden="true">scroll para explorar</p>
     </div>
 
     <div class="hero-right">
       <div class="hero-avatar-wrap">
-        <!-- OPT: decoding="async" para que el decode de la imagen no bloquee el hilo principal -->
-        <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="hero-avatar" width="320" height="320" fetchpriority="high" decoding="async">
+        <!--
+          fetchpriority="high": este es el LCP candidate.
+          decoding="async": el decode no bloquea el hilo principal.
+          width/height explícitos: evitan CLS mientras carga.
+        -->
+        <img src="assets/img/Ricardo.webp"
+             alt="Ricardo Hernández Castro, desarrollador de software"
+             class="hero-avatar"
+             width="320" height="320"
+             fetchpriority="high"
+             decoding="async">
         <div class="hero-avatar-ring" aria-hidden="true"></div>
       </div>
     </div>
 
-    <div class="hero-meta" aria-label="Visitas">
-      <span id="visitorCount">cargando...</span>
+    <div class="hero-meta" aria-label="Contador de visitas">
+      <span id="visitorCount" aria-live="polite">cargando...</span>
     </div>
   </section>
 
   <!-- ─── ABOUT ─── -->
-  <section id="about" class="section">
+  <section id="about" class="section" aria-label="Sobre mí">
     <div class="section-inner">
-      <div class="section-label">— sobre mí</div>
+      <div class="section-label" aria-hidden="true">— sobre mí</div>
       <div class="about-layout">
         <div class="about-main">
           <div class="about-identity reveal">
-            <img src="assets/img/Ricardo.webp" alt="Ricardo Hernández" class="about-photo" width="80" height="80" loading="lazy" decoding="async">
+            <img src="assets/img/Ricardo.webp"
+                 alt="Ricardo Hernández Castro"
+                 class="about-photo"
+                 width="80" height="80"
+                 loading="lazy"
+                 decoding="async">
             <div>
               <p class="about-greeting">hey, soy</p>
               <h2 class="about-name">Ricardo.</h2>
@@ -134,50 +241,55 @@
             automatización. Me enfoco en crear soluciones funcionales, intuitivas y eficientes, combinando experiencia
             técnica con aprendizaje continuo y desarrollo autodidacta.
           </p>
-          <div class="tech-icons reveal" data-delay="2" aria-label="Tecnologías">
-            <span class="tech-badge js" title="JavaScript"><i class="devicon-javascript-plain colored"></i></span>
-            <span class="tech-badge cs" title="C#"><i class="devicon-csharp-plain colored"></i></span>
-            <span class="tech-badge cpp" title="C++"><i class="devicon-cplusplus-plain colored"></i></span>
-            <span class="tech-badge html" title="HTML"><i class="devicon-html5-plain colored"></i></span>
-            <span class="tech-badge css3" title="CSS"><i class="devicon-css3-plain colored"></i></span>
-            <span class="tech-badge php" title="PHP"><i class="devicon-php-plain colored"></i></span>
-            <span class="tech-badge sql" title="SQL"><i class="devicon-mysql-plain colored"></i></span>
-            <span class="tech-badge node" title="Node.js"><i class="devicon-nodejs-plain colored"></i></span>
-            <span class="tech-badge git" title="Git"><i class="devicon-git-plain colored"></i></span>
+          <div class="tech-icons reveal" data-delay="2" aria-label="Tecnologías que domino">
+            <span class="tech-badge js" title="JavaScript"><i class="devicon-javascript-plain colored" aria-hidden="true"></i></span>
+            <span class="tech-badge cs" title="C#"><i class="devicon-csharp-plain colored" aria-hidden="true"></i></span>
+            <span class="tech-badge cpp" title="C++"><i class="devicon-cplusplus-plain colored" aria-hidden="true"></i></span>
+            <span class="tech-badge html" title="HTML"><i class="devicon-html5-plain colored" aria-hidden="true"></i></span>
+            <span class="tech-badge css3" title="CSS"><i class="devicon-css3-plain colored" aria-hidden="true"></i></span>
+            <span class="tech-badge php" title="PHP"><i class="devicon-php-plain colored" aria-hidden="true"></i></span>
+            <span class="tech-badge sql" title="SQL"><i class="devicon-mysql-plain colored" aria-hidden="true"></i></span>
+            <span class="tech-badge node" title="Node.js"><i class="devicon-nodejs-plain colored" aria-hidden="true"></i></span>
+            <span class="tech-badge git" title="Git"><i class="devicon-git-plain colored" aria-hidden="true"></i></span>
           </div>
         </div>
 
         <div class="about-social reveal" data-delay="1">
-          <div class="social-label">— encuéntrame en</div>
+          <div class="social-label" aria-hidden="true">— encuéntrame en</div>
           <div class="social-list">
-            <a href="https://github.com/richyb0t" target="_blank" rel="noopener" class="social-row">
-              <span class="social-icon"><i class="fab fa-github"></i></span>
+            <a href="https://github.com/richyb0t" target="_blank" rel="noopener noreferrer" class="social-row"
+               aria-label="GitHub de Ricardo: richyb0t">
+              <span class="social-icon" aria-hidden="true"><i class="fab fa-github"></i></span>
               <span class="social-platform">github</span>
-              <span class="social-sep">/</span>
+              <span class="social-sep" aria-hidden="true">/</span>
               <span class="social-handle">richyb0t</span>
             </a>
-            <a href="https://www.linkedin.com/in/richyb0t" target="_blank" rel="noopener" class="social-row">
-              <span class="social-icon"><i class="fab fa-linkedin"></i></span>
+            <a href="https://www.linkedin.com/in/richyb0t" target="_blank" rel="noopener noreferrer" class="social-row"
+               aria-label="LinkedIn de Ricardo: richyb0t">
+              <span class="social-icon" aria-hidden="true"><i class="fab fa-linkedin"></i></span>
               <span class="social-platform">linkedin</span>
-              <span class="social-sep">/</span>
+              <span class="social-sep" aria-hidden="true">/</span>
               <span class="social-handle">richyb0t</span>
             </a>
-            <a href="https://discord.gg/W3PjpGqktQ" target="_blank" rel="noopener" class="social-row">
-              <span class="social-icon"><i class="fab fa-discord"></i></span>
+            <a href="https://discord.gg/W3PjpGqktQ" target="_blank" rel="noopener noreferrer" class="social-row"
+               aria-label="Servidor de Discord de Ricardo">
+              <span class="social-icon" aria-hidden="true"><i class="fab fa-discord"></i></span>
               <span class="social-platform">discord</span>
-              <span class="social-sep">/</span>
+              <span class="social-sep" aria-hidden="true">/</span>
               <span class="social-handle">servidor</span>
             </a>
-            <a href="https://www.instagram.com/ricardoo.bot" target="_blank" rel="noopener" class="social-row">
-              <span class="social-icon"><i class="fab fa-instagram"></i></span>
+            <a href="https://www.instagram.com/ricardoo.bot" target="_blank" rel="noopener noreferrer" class="social-row"
+               aria-label="Instagram de Ricardo: ricardoo.bot">
+              <span class="social-icon" aria-hidden="true"><i class="fab fa-instagram"></i></span>
               <span class="social-platform">instagram</span>
-              <span class="social-sep">/</span>
+              <span class="social-sep" aria-hidden="true">/</span>
               <span class="social-handle">ricardoo.bot</span>
             </a>
-            <a href="https://www.twitch.tv/richyb0t" target="_blank" rel="noopener" class="social-row">
-              <span class="social-icon"><i class="fab fa-twitch"></i></span>
+            <a href="https://www.twitch.tv/richyb0t" target="_blank" rel="noopener noreferrer" class="social-row"
+               aria-label="Twitch de Ricardo: richyb0t">
+              <span class="social-icon" aria-hidden="true"><i class="fab fa-twitch"></i></span>
               <span class="social-platform">twitch</span>
-              <span class="social-sep">/</span>
+              <span class="social-sep" aria-hidden="true">/</span>
               <span class="social-handle">richyb0t</span>
             </a>
           </div>
@@ -187,21 +299,21 @@
   </section>
 
   <!-- ─── PROJECTS ─── -->
-  <section id="projects" class="section">
+  <section id="projects" class="section" aria-label="Proyectos">
     <div class="section-inner">
-      <div class="section-label">— mi trabajo</div>
+      <div class="section-label" aria-hidden="true">— mi trabajo</div>
       <div class="projects-grid">
 
         <a href="app.html" class="project-card reveal" data-delay="1">
           <div class="project-card-header">
-            <span class="project-icon"><i class="fas fa-folder"></i></span>
+            <span class="project-icon" aria-hidden="true"><i class="fas fa-folder"></i></span>
             <span class="project-repo">Ricardo / <strong>AgendaCitas</strong></span>
           </div>
           <p class="project-desc">Aplicación de escritorio para hospitales: gestión de doctores, pacientes y citas
             clínicas con reportes PDF y control de roles.</p>
           <div class="project-footer">
             <span class="project-lang" data-lang="cs">
-              <span class="lang-dot"></span> C#
+              <span class="lang-dot" aria-hidden="true"></span> C#
             </span>
             <span class="project-date">Dic 2022</span>
           </div>
@@ -209,14 +321,14 @@
 
         <a href="web.html" class="project-card reveal" data-delay="2">
           <div class="project-card-header">
-            <span class="project-icon"><i class="fas fa-folder"></i></span>
+            <span class="project-icon" aria-hidden="true"><i class="fas fa-folder"></i></span>
             <span class="project-repo">Ricardo / <strong>RutinasWeb</strong></span>
           </div>
           <p class="project-desc">Plataforma responsive que recomienda rutinas de ejercicio personalizadas según
             objetivos del usuario, con backend MySQL.</p>
           <div class="project-footer">
             <span class="project-lang" data-lang="js">
-              <span class="lang-dot"></span> JavaScript
+              <span class="lang-dot" aria-hidden="true"></span> JavaScript
             </span>
             <span class="project-date">Dic 2023</span>
           </div>
@@ -224,14 +336,14 @@
 
         <a href="bot.html" class="project-card reveal" data-delay="3">
           <div class="project-card-header">
-            <span class="project-icon"><i class="fas fa-folder"></i></span>
+            <span class="project-icon" aria-hidden="true"><i class="fas fa-folder"></i></span>
             <span class="project-repo">Ricardo / <strong>DiscordBot</strong></span>
           </div>
           <p class="project-desc">Bot avanzado para moderación, música e interacción en servidores Discord. Soporta
             botones, menús dinámicos y audio en voz.</p>
           <div class="project-footer">
             <span class="project-lang" data-lang="js">
-              <span class="lang-dot"></span> JavaScript
+              <span class="lang-dot" aria-hidden="true"></span> JavaScript
             </span>
             <span class="project-date">Ago 2025</span>
           </div>
@@ -242,47 +354,53 @@
   </section>
 
   <!-- ─── CONTACT ─── -->
-  <section id="contact" class="section">
+  <section id="contact" class="section" aria-label="Contacto">
     <div class="section-inner">
-      <div class="section-label">— contacto</div>
+      <div class="section-label" aria-hidden="true">— contacto</div>
       <div class="contact-layout">
         <div class="contact-info-col reveal">
           <h2 class="contact-heading">hablemos.</h2>
           <p class="contact-sub">¿tienes un proyecto en mente? escríbeme.</p>
           <div class="contact-items">
             <div class="contact-item">
-              <i class="fas fa-envelope"></i>
-              <span>ricardohdez1207@gmail.com</span>
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              <a href="mailto:ricardohdez1207@gmail.com">ricardohdez1207@gmail.com</a>
             </div>
             <div class="contact-item">
-              <i class="fas fa-map-marker-alt"></i>
+              <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
               <span>Guadalajara, Jalisco, MX</span>
             </div>
             <div class="contact-item">
-              <i class="fas fa-phone"></i>
-              <span>+52 332 228 1296</span>
+              <i class="fas fa-phone" aria-hidden="true"></i>
+              <a href="tel:+523322281296">+52 332 228 1296</a>
             </div>
           </div>
-          <button class="btn-cv" onclick="downloadCV()">
-            <i class="fas fa-download"></i> descargar CV
+          <button class="btn-cv" onclick="downloadCV()" type="button"
+                  aria-label="Descargar CV de Ricardo Hernández Castro en PDF">
+            <i class="fas fa-download" aria-hidden="true"></i> descargar CV
           </button>
         </div>
 
-        <form class="contact-form reveal" data-delay="1" id="contactForm" novalidate>
+        <!-- novalidate: la validación la hace JS con mensajes en español -->
+        <form class="contact-form reveal" data-delay="1" id="contactForm" novalidate
+              aria-label="Formulario de contacto">
           <div class="form-row">
             <label for="name">nombre</label>
-            <input type="text" id="name" name="name" autocomplete="name" required>
+            <input type="text" id="name" name="name" autocomplete="name" required
+                   placeholder="Tu nombre">
           </div>
           <div class="form-row">
             <label for="email">email</label>
-            <input type="email" id="email" name="email" autocomplete="email" required>
+            <input type="email" id="email" name="email" autocomplete="email" required
+                   placeholder="tu@email.com">
           </div>
           <div class="form-row">
             <label for="message">mensaje</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
+            <textarea id="message" name="message" rows="5" required
+                      placeholder="Cuéntame sobre tu proyecto..."></textarea>
           </div>
           <button type="submit" class="btn-send" id="btnSend">
-            <i class="fas fa-paper-plane"></i> enviar mensaje
+            <i class="fas fa-paper-plane" aria-hidden="true"></i> enviar mensaje
           </button>
         </form>
       </div>
@@ -293,18 +411,24 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2025 Ricardo Hernández Castro</span>
-      <div class="footer-links">
-        <a href="https://github.com/richyb0t" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
-        <a href="https://www.linkedin.com/in/richyb0t" target="_blank" rel="noopener"><i
-            class="fab fa-linkedin"></i></a>
-        <a href="https://www.twitch.tv/richyb0t" target="_blank" rel="noopener"><i class="fab fa-twitch"></i></a>
+      <div class="footer-links" aria-label="Redes sociales">
+        <a href="https://github.com/richyb0t" target="_blank" rel="noopener noreferrer"
+           aria-label="GitHub de Ricardo"><i class="fab fa-github" aria-hidden="true"></i></a>
+        <a href="https://www.linkedin.com/in/richyb0t" target="_blank" rel="noopener noreferrer"
+           aria-label="LinkedIn de Ricardo"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
+        <a href="https://www.twitch.tv/richyb0t" target="_blank" rel="noopener noreferrer"
+           aria-label="Twitch de Ricardo"><i class="fab fa-twitch" aria-hidden="true"></i></a>
       </div>
     </div>
   </footer>
 
-  <!-- Toast -->
-  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+  <!-- Toast (aria-live="polite" ya está en el HTML; rol alert para lectores de pantalla) -->
+  <div id="toast" class="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
 
+  <!--
+    Script principal: defer garantiza que no bloquea el parser.
+    Se ejecuta después del DOMContentLoaded, cuando el HTML ya está parseado.
+  -->
   <script src="assets/js/index.js" defer></script>
 </body>
 
